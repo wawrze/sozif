@@ -20,6 +20,14 @@ namespace Sozif.Controllers
 
         public IActionResult Index()
         {
+            if (Request.Cookies.ContainsKey("AUTH") && Request.Cookies["AUTH"] == "OK")
+            {
+                ViewBag.Logged = true;
+            }
+            else
+            {
+                ViewBag.Logged = false;
+            }
             return View();
         }
 
