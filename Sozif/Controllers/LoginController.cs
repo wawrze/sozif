@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sozif.Attributes;
 using Sozif.Models;
 using System;
 using System.Linq;
@@ -20,14 +21,6 @@ namespace Sozif.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            if (Request.Cookies.ContainsKey("AUTH") && Request.Cookies["AUTH"] == "OK")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Logged = false;
-            }
             return View();
         }
 

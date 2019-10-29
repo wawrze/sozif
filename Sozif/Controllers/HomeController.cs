@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Sozif.Attributes;
 using Sozif.Models;
 
 namespace Sozif.Controllers
 {
+    [Auth]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -20,14 +23,6 @@ namespace Sozif.Controllers
 
         public IActionResult Index()
         {
-            if (Request.Cookies.ContainsKey("AUTH") && Request.Cookies["AUTH"] == "OK")
-            {
-                ViewBag.Logged = true;
-            }
-            else
-            {
-                ViewBag.Logged = false;
-            }
             return View();
         }
 
