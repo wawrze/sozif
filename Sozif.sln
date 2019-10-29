@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sozif", "Sozif\Sozif.csproj", "{ADF5ACC7-E9DF-4DA2-862B-3D4726739ECD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADF5ACC7-E9DF-4DA2-862B-3D4726739ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADF5ACC7-E9DF-4DA2-862B-3D4726739ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADF5ACC7-E9DF-4DA2-862B-3D4726739ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADF5ACC7-E9DF-4DA2-862B-3D4726739ECD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DE14455-B8C2-4427-BA0F-057A5E666BC4}
+	EndGlobalSection
+EndGlobal
