@@ -1,13 +1,13 @@
-﻿@model Sozif.Products
+﻿@model Sozif.Models.ProductDTO
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edycja \"" + Model.ProductName + "\"";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>Edycja produktu</h1>
 
-<h4>Products</h4>
+<h4>@Model.ProductName</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -15,31 +15,28 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ProductId" />
             <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
+                <label class="control-label">Nazwa produktu</label>
                 <input asp-for="ProductName" class="form-control" />
                 <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BaseNetPrice" class="control-label"></label>
-                <input asp-for="BaseNetPrice" class="form-control" />
+                <label class="control-label">Cena netto</label>
+                <input asp-for="BaseNetPrice" step=".01" class="form-control" />
                 <span asp-validation-for="BaseNetPrice" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TaxRateId" class="control-label"></label>
+                <label class="control-label">Stawka VAT</label>
                 <select asp-for="TaxRateId" class="form-control" asp-items="ViewBag.TaxRateId"></select>
                 <span asp-validation-for="TaxRateId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Zapisz zmiany" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Wróć do listy produktów</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

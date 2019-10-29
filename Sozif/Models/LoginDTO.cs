@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Sozif.Models
 {
-    public class LoginData
+    public class LoginDTO
     {
 
-        public LoginData()
+        public LoginDTO()
         {
         }
 

@@ -27,10 +27,10 @@ namespace Sozif.Controllers
         // POST: Login/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("Username,Password")] LoginData loginData)
+        public async Task<IActionResult> Login([Bind("Username,Password")] LoginDTO loginDTO)
         {
             String message = "";
-            Users user = _context.Users.SingleOrDefault(user => user.Username == loginData.Username);
+            Users user = _context.Users.SingleOrDefault(user => user.Username == loginDTO.Username);
 
             if (user == null)
             {
@@ -38,7 +38,7 @@ namespace Sozif.Controllers
             }
             else
             {
-                if (loginData.Password != user.Password)
+                if (loginDTO.Password != user.Password)
                 {
                     message = "Błędne hasło";
                 }

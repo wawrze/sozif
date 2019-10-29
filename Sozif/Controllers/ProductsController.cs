@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sozif;
 using Sozif.Attributes;
+using Sozif.Models;
 
 namespace Sozif.Controllers
 {
@@ -30,7 +31,7 @@ namespace Sozif.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "TaxRateId");
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate");
             return View();
         }
 
@@ -39,16 +40,21 @@ namespace Sozif.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,BaseNetPrice,TaxRateId")] Products products)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,BaseNetPrice,TaxRateId")] ProductDTO product)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(products);
+                var productToInsert = new Products();
+                productToInsert.ProductName = product.ProductName;
+                productToInsert.TaxRateId = product.TaxRateId;
+                productToInsert.BaseNetPrice = (int) (product.BaseNetPrice * 100);
+
+                _context.Add(productToInsert);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "TaxRateId", products.TaxRateId);
-            return View(products);
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
+            return View(product);
         }
 
         // GET: Products/Edit/5
@@ -64,8 +70,14 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "TaxRateId", products.TaxRateId);
-            return View(products);
+            var product = new ProductDTO();
+            product.ProductId = products.ProductId;
+            product.ProductName = products.ProductName;
+            product.BaseNetPrice = products.BaseNetPrice / 100;
+            product.TaxRateId = products.TaxRateId;
+
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
+            return View(product);
         }
 
         // POST: Products/Edit/5
@@ -73,23 +85,29 @@ namespace Sozif.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,BaseNetPrice,TaxRateId")] Products products)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,BaseNetPrice,TaxRateId")] ProductDTO product)
         {
-            if (id != products.ProductId)
+            if (id != product.ProductId)
             {
                 return NotFound();
             }
+
+            var productToInsert = new Products();
+            productToInsert.ProductId = product.ProductId;
+            productToInsert.ProductName = product.ProductName;
+            productToInsert.BaseNetPrice = (int) (product.BaseNetPrice * 100);
+            productToInsert.TaxRateId = product.TaxRateId;
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(products);
+                    _context.Update(productToInsert);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductsExists(products.ProductId))
+                    if (!ProductsExists(productToInsert.ProductId))
                     {
                         return NotFound();
                     }
@@ -100,8 +118,8 @@ namespace Sozif.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "TaxRateId", products.TaxRateId);
-            return View(products);
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
+            return View(product);
         }
 
         // GET: Products/Delete/5
