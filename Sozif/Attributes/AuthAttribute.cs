@@ -7,7 +7,10 @@ namespace Sozif.Attributes
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!context.HttpContext.Request.Cookies.ContainsKey("AUTH") || context.HttpContext.Request.Cookies["AUTH"] != "OK" || context.HttpContext.Session.GetString("user") != "OK")
+            string CookieToken = context.HttpContext.Request.Cookies["AUTH"];
+            string SessionToken = context.HttpContext.Session.GetString("AUTH");
+
+            if (CookieToken == null || SessionToken == null || CookieToken != SessionToken)
             {
                 context.HttpContext.Response.Redirect("Login/Index");
             }

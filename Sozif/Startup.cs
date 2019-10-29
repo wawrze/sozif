@@ -33,10 +33,8 @@ namespace Sozif
 
             services.AddSession(options =>
             {
-                // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromDays(100);
                 options.Cookie.HttpOnly = true;
-                // Make the session cookie essential
                 options.Cookie.IsEssential = true;
             });
 

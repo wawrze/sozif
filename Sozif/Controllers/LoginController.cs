@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sozif.Attributes;
 using Sozif.Models;
+using Sozif.Utils;
 using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -22,6 +25,7 @@ namespace Sozif.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
+            ViewBag.HideMenu = true;
             return View();
         }
 
@@ -39,16 +43,16 @@ namespace Sozif.Controllers
             }
             else
             {
-                if (loginDTO.Password != user.Password)
+                if (!PasswordHelper.VerifyHashedPassword(user.Password, loginDTO.Password))
                 {
                     message = "Błędne hasło";
                 }
                 else
                 {
                     UserPermissions perms = _context.UserPermissions.Find(user.PermLevel);
-                    Response.Cookies.Append("AUTH", "OK");
-                    Response.Cookies.Append("AUTH_USER", user.UserId.ToString());
-                    HttpContext.Session.SetString("user", "OK");
+                    string token = Guid.NewGuid().ToString();
+                    Response.Cookies.Append("AUTH", token);
+                    HttpContext.Session.SetString("AUTH", token);
                     HttpContext.Session.SetString("EditUsers", perms.EditUsers ? "true" : "false");
                     HttpContext.Session.SetString("EditProducts", perms.EditProducts ? "true" : "false");
                     HttpContext.Session.SetString("EditCustomers", perms.EditCustomers ? "true" : "false");

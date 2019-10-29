@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sozif;
+using Sozif.Attributes;
 
 namespace Sozif.Controllers
 {
+    [Auth]
     public class TaxRatesController : Controller
     {
         private readonly sozifContext _context;

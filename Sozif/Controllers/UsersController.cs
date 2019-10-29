@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sozif;
+using Sozif.Attributes;
+using Sozif.Utils;
 
 namespace Sozif.Controllers
 {
+
+    [Auth]
     public class UsersController : Controller
     {
         private readonly sozifContext _context;
@@ -54,6 +58,7 @@ namespace Sozif.Controllers
             }
             if (ModelState.IsValid)
             {
+                users.Password = PasswordHelper.HashPassword(users.Password);
                 _context.Add(users);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -103,6 +108,7 @@ namespace Sozif.Controllers
             {
                 try
                 {
+                    // TODO: check if password is empty or the same as in DB (to not change password)
                     _context.Update(users);
                     await _context.SaveChangesAsync();
                 }
