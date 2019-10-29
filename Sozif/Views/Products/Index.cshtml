@@ -7,9 +7,12 @@
 
 <h1>Lista produktów</h1>
 
-<p>
-    <a asp-action="Create">Dodaj produkt</a>
-</p>
+@if (Context.Session.GetString("EditProducts") == "true")
+{
+    <p>
+        <a asp-action="Create">Dodaj produkt</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -25,29 +28,36 @@
             <th>
                 Cena brutto
             </th>
-            <th></th>
+            @if (Context.Session.GetString("EditProducts") == "true")
+            {
+                <th></th>
+            }
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @((item.BaseNetPrice / 100.0).ToString("0.00")) zł
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaxRate.Rate)%
-            </td>
-            <td>
-                @((item.BaseGrossPrice / 100.0).ToString("0.00")) zł
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edytuj</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Usuń</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @((item.BaseNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaxRate.Rate)%
+                </td>
+                <td>
+                    @((item.BaseGrossPrice / 100.0).ToString("0.00")) zł
+                </td>
+                @if (Context.Session.GetString("EditProducts") == "true")
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edytuj</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ProductId">Usuń</a>
+                    </td>
+                }
+            </tr>
+        }
     </tbody>
 </table>

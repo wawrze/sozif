@@ -1,0 +1,28 @@
+﻿@model Sozif.TaxRates
+
+@{
+    ViewData["Title"] = "Usuwanie stawki VAT";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Usuwanie stawki VAT</h1>
+
+<h3>Czy jesteś pewien, że chcesz usunąć tę stawkę?</h3>
+<div>
+    <h4></h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Stawka
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Rate)%
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="TaxRateId" />
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        <a asp-action="Index">Wróć do listy stawek VAT</a>
+    </form>
+</div>

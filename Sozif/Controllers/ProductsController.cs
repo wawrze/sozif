@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,10 @@ namespace Sozif.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetString("EditProducts") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate");
             return View();
         }
@@ -42,6 +47,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,BaseNetPrice,TaxRateId")] ProductDTO product)
         {
+            if (HttpContext.Session.GetString("EditProducts") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (ModelState.IsValid)
             {
                 var productToInsert = new Products();
@@ -60,6 +69,10 @@ namespace Sozif.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (HttpContext.Session.GetString("EditProducts") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -87,6 +100,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,BaseNetPrice,TaxRateId")] ProductDTO product)
         {
+            if (HttpContext.Session.GetString("EditProducts") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -125,6 +142,10 @@ namespace Sozif.Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (HttpContext.Session.GetString("EditProducts") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -146,6 +167,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (HttpContext.Session.GetString("EditProducts") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var products = await _context.Products.FindAsync(id);
             _context.Products.Remove(products);
             await _context.SaveChangesAsync();

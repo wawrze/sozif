@@ -1,0 +1,51 @@
+﻿@model Sozif.Users
+
+@{
+    ViewData["Title"] = "Edycja użytkownika \"" + Model.Username + "\"";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edycja użytkownika</h1>
+
+<h4>"@(Model.Username) (@(Model.Firstname) @(Model.Lastname))"</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UserId" />
+            <div class="form-group">
+                <label class="control-label">Nazwa użytkownika</label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Hasło</label>
+                <input asp-for="Password" type="password" class="form-control" value="@Model.Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Imię</label>
+                <input asp-for="Firstname" class="form-control" />
+                <span asp-validation-for="Firstname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Nazwisko</label>
+                <input asp-for="Lastname" class="form-control" />
+                <span asp-validation-for="Lastname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Poziom uprawnień</label>
+                <select asp-for="PermLevel" class="form-control" asp-items="ViewBag.PermLevel"></select>
+                <span asp-validation-for="PermLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Zapisz zmiany" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Wróć do listy użytkowników</a>
+</div>

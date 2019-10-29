@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Sozif.Attributes;
 using Sozif.Models;
 using System;
@@ -27,7 +28,7 @@ namespace Sozif.Controllers
         // POST: Login/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("Username,Password")] LoginDTO loginDTO)
+        public IActionResult Login([Bind("Username,Password")] LoginDTO loginDTO)
         {
             String message = "";
             Users user = _context.Users.SingleOrDefault(user => user.Username == loginDTO.Username);
@@ -44,14 +45,30 @@ namespace Sozif.Controllers
                 }
                 else
                 {
+                    UserPermissions perms = _context.UserPermissions.Find(user.PermLevel);
                     Response.Cookies.Append("AUTH", "OK");
-                    Response.Cookies.Append("AUTH_USER", user.Username);
+                    Response.Cookies.Append("AUTH_USER", user.UserId.ToString());
+                    HttpContext.Session.SetString("user", "OK");
+                    HttpContext.Session.SetString("EditUsers", perms.EditUsers ? "true" : "false");
+                    HttpContext.Session.SetString("EditProducts", perms.EditProducts ? "true" : "false");
+                    HttpContext.Session.SetString("EditCustomers", perms.EditCustomers ? "true" : "false");
+                    HttpContext.Session.SetString("EditOrders", perms.EditOrders ? "true" : "false");
+                    HttpContext.Session.SetString("EditInvoices", perms.EditInvoices ? "true" : "false");
+
                     return RedirectToAction("Index", "Home");
                 }
             }
             ViewBag.LoginMessage = message;
 
             return View();
+        }
+
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.Clear();
+            Response.Cookies.Delete("AUTH");
+            Response.Cookies.Delete("AUTH_USER");
+            return RedirectToAction("Index");
         }
     }
 

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Sozif.TaxRates>
+
+@{
+    ViewData["Title"] = "Stawki VAT";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <h1>Lista stawek VAT</h1>
+
+<p>
+    <a asp-action="Create">Dodaj nową stawkę</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Stawka
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rate)%
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.TaxRateId">Edytuj</a> |
+                <a asp-action="Delete" asp-route-id="@item.TaxRateId">Usuń</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

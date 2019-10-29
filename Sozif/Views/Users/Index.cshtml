@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Sozif.Users>
+
+@{
+    ViewData["Title"] = "Lista użytkowników";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Lista użytkowników</h1>
+
+<p>
+    <a asp-action="Create">Dodaj użytkownika</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nazwa użytkownika
+            </th>
+            <th>
+                Imię
+            </th>
+            <th>
+                Nazwisko
+            </th>
+            <th>
+                Poziom uprawnień
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Firstname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lastname)
+            </td>
+            <td>
+                @item.PermLevelNavigation.PermName (@item.PermLevelNavigation.PermLevel)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.UserId">Edytuj</a> |
+                <a asp-action="Delete" asp-route-id="@item.UserId">Usuń</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
