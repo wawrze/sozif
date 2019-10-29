@@ -86,7 +86,7 @@ namespace Sozif.Controllers
             var product = new ProductDTO();
             product.ProductId = products.ProductId;
             product.ProductName = products.ProductName;
-            product.BaseNetPrice = products.BaseNetPrice / 100;
+            product.BaseNetPrice = ((decimal) products.BaseNetPrice) / 100;
             product.TaxRateId = products.TaxRateId;
 
             ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
