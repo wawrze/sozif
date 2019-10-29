@@ -1,26 +1,29 @@
 ﻿@model IEnumerable<Sozif.Products>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista produktów";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Lista produktów</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Dodaj produkt</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ProductName)
+                Nazwa produktu
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BaseNetPrice)
+                Cena netto
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TaxRate)
+                Stawka VAT
+            </th>
+            <th>
+                Cena brutto
             </th>
             <th></th>
         </tr>
@@ -32,15 +35,17 @@
                 @Html.DisplayFor(modelItem => item.ProductName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BaseNetPrice)
+                @((item.BaseNetPrice / 100.0).ToString("0.00")) zł
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TaxRate.Rate)
+                @Html.DisplayFor(modelItem => item.TaxRate.Rate)%
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                @((item.BaseGrossPrice / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ProductId">Edytuj</a> |
+                <a asp-action="Delete" asp-route-id="@item.ProductId">Usuń</a>
             </td>
         </tr>
 }

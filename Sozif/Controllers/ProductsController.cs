@@ -25,25 +25,6 @@ namespace Sozif.Controllers
             return View(await sozifContext.ToListAsync());
         }
 
-        // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var products = await _context.Products
-                .Include(p => p.TaxRate)
-                .FirstOrDefaultAsync(m => m.ProductId == id);
-            if (products == null)
-            {
-                return NotFound();
-            }
-
-            return View(products);
-        }
-
         // GET: Products/Create
         public IActionResult Create()
         {

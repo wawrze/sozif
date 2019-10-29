@@ -15,6 +15,14 @@ namespace Sozif
         public int BaseNetPrice { get; set; }
         public int TaxRateId { get; set; }
 
+        public int BaseGrossPrice
+        {
+            get
+            {
+                return BaseNetPrice * (100 + TaxRate.Rate) / 100;
+            }
+        }
+
         public virtual TaxRates TaxRate { get; set; }
         public virtual ICollection<OrderPositions> OrderPositions { get; set; }
     }
