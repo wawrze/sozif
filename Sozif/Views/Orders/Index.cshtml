@@ -1,0 +1,96 @@
+﻿@model IEnumerable<Sozif.Orders>
+
+@{
+    ViewData["Title"] = "Lista zamówień";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Lista zamówień</h1>
+
+<p>
+    @if (Context.Session.GetString("EditOrders") == "true")
+    {
+        <a asp-action="ChooseCustomer">Stwórz nowe zamówienie</a>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Numer zamówienia
+            </th>
+            <th>
+                Klient
+            </th>
+            <th>
+                Data zamówienia
+            </th>
+            <th>
+                Adres realizacji
+            </th>
+            <th>
+                Ilość pozycji
+            </th>
+            <th>
+                Wartość netto
+            </th>
+            <th>
+                Wartość VAT
+            </th>
+            <th>
+                Wartość brutto
+            </th>
+            <th>
+                Data realizacji
+            </th>
+            <th>
+                Numer faktury
+            </th>
+            <th>
+                Osoba przyjmująca
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model)
+        {
+            row = !row;
+            <tr onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'" class=@(row ? "d0" : "d1")>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @(item.Customer.ToString())
+                </td>
+                <td>
+                    @(item.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                </td>
+                <td>
+                    @(item.Address.FullAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PositionsCount)
+                </td>
+                <td>
+                    @((item.NetValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.TaxValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.GrossValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @(item.RealisationDate?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

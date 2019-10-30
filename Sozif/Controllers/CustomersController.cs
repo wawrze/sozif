@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sozif.Attributes;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sozif.Controllers
 {
+    [Auth]
     public class CustomersController : Controller
     {
         private readonly sozifContext _context;
@@ -220,7 +222,7 @@ namespace Sozif.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CustomersExists(addresses.AddressId))
+                    if (!CustomersExists(addresses.CustomerId))
                     {
                         return NotFound();
                     }

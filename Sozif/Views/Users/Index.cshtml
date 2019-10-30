@@ -29,25 +29,28 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Username)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Firstname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lastname)
-            </td>
-            <td>
-                @item.PermLevelNavigation.PermName (@item.PermLevelNavigation.PermLevel)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.UserId">Edytuj</a> |
-                <a asp-action="Delete" asp-route-id="@item.UserId">Usuń</a>
-            </td>
-        </tr>
-}
+        @{ bool row = true; }
+        @foreach (var item in Model)
+        {
+            row = !row;
+            <tr class=@(row ? "d0" : "d1")>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Firstname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lastname)
+                </td>
+                <td>
+                    @item.PermLevelNavigation.PermName (@item.PermLevelNavigation.PermLevel)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.UserId">Edytuj</a> |
+                    <a asp-action="Delete" asp-route-id="@item.UserId">Usuń</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

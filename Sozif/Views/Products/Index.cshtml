@@ -28,16 +28,14 @@
             <th>
                 Cena brutto
             </th>
-            @if (Context.Session.GetString("EditProducts") == "true")
-            {
-                <th></th>
-            }
         </tr>
     </thead>
     <tbody>
+        @{ bool row = true; }
         @foreach (var item in Model)
         {
-            <tr>
+            row = !row;
+            <tr onclick="location.href = '@(Url.Action("Details", "Products", new { id = item.ProductId }))'" class=@(row ? "d0" : "d1")>
                 <td>
                     @Html.DisplayFor(modelItem => item.ProductName)
                 </td>
@@ -50,13 +48,6 @@
                 <td>
                     @((item.BaseGrossPrice / 100.0).ToString("0.00")) zł
                 </td>
-                @if (Context.Session.GetString("EditProducts") == "true")
-                {
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edytuj</a> |
-                        <a asp-action="Delete" asp-route-id="@item.ProductId">Usuń</a>
-                    </td>
-                }
             </tr>
         }
     </tbody>

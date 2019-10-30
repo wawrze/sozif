@@ -16,6 +16,14 @@ namespace Sozif
         public bool IsMainAddress { get; set; }
         public int CustomerId { get; set; }
 
+        public string FullAddress
+        {
+            get
+            {
+                return Street + ", " + PostalCode + " " + City;
+            }
+        }
+
         public virtual Customers Customer { get; set; }
         public virtual ICollection<Orders> Orders { get; set; }
     }

@@ -76,6 +76,12 @@ namespace Sozif
                 Nip = Decimal.Parse(justNumber);
             }
         }
+
+        public override string ToString()
+        {
+            return CustomerName + " (" + NipString + ")";
+        }
+
         public virtual ICollection<Addresses> Addresses { get; set; }
         public virtual ICollection<Invoices> Invoices { get; set; }
         public virtual ICollection<Orders> Orders { get; set; }

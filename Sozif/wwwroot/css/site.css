@@ -27,7 +27,7 @@ a {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 10px;
+    font-size: 10px;
 }
 @media (min-width: 768px) {
   html {
@@ -37,6 +37,18 @@ html {
 
 table {
     font-size: 10px;
+}
+
+tr.d0 td {
+    background-color: #e6f7ff;
+}
+
+tr.d1 td {
+    background-color: #ccefff;
+}
+
+tr:hover td {
+    background-color: #ffffff;
 }
 
 .border-top {
@@ -66,6 +78,7 @@ body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
+
 .footer {
   position: absolute;
   bottom: 0;

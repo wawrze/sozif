@@ -1,0 +1,154 @@
+﻿@model Sozif.Orders
+
+@{
+    ViewData["Title"] = "Szczegóły zamówienia nr " + Model.OrderNumber;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Szczegóły zamówienia</h1>
+
+<div>
+    <h4>@Model.OrderNumber</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Numer zamówienia
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OrderNumber)
+        </dd>
+        <dt class="col-sm-2">
+            Klient
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Customer.ToString())
+        </dd>
+        <dt class="col-sm-2">
+            Data zamówienia
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+        </dd>
+        <dt class="col-sm-2">
+            Adres realizacji
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Address.FullAddress)
+        </dd>
+        <dt class="col-sm-2">
+            Wartość netto
+        </dt>
+        <dd class="col-sm-10">
+            @((Model.NetValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Wartość VAT
+        </dt>
+        <dd class="col-sm-10">
+            @((Model.TaxValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Wartość brutto
+        </dt>
+        <dd class="col-sm-10">
+            @((Model.GrossValue / 100.0).ToString("0.00")) zł
+        </dd>
+        @if (Model.RealisationDate != null)
+        {
+            <dt class="col-sm-2">
+                Data realizacji
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.RealisationDate?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+            </dd>
+        }
+        @if (Model.Invoice != null)
+        {
+            <dt class="col-sm-2">
+                Numer faktury
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Invoice.InvoiceNumber)
+            </dd>
+        }
+        <dt class="col-sm-2">
+            Osoba przyjmująca zamówienie
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (Model.RealisationDate == null && Context.Session.GetString("EditOrders") == "true")
+    {
+        <a asp-action="Edit" asp-route-id="@Model.OrderId">Edytuj</a><text> |</text>
+        <a asp-action="Delete" asp-route-id="@Model.OrderId">Usuń</a><text> |</text>
+    }
+    <a asp-action="Index">Wróć do listy zamówień</a>
+</div>
+<hr />
+<h4>Pozycje zamówienia</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Produkt
+            </th>
+            <th>
+                Ilość
+            </th>
+            <th>
+                Cena netto
+            </th>
+            <th>
+                Rabat
+            </th>
+            <th>
+                Cena netto po rabacie
+            </th>
+            <th>
+                Suma netto
+            </th>
+            <th>
+                Suma VAT
+            </th>
+            <th>
+                Suma brutto
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model.OrderPositions)
+        {
+            row = !row;
+            <tr class=@(row ? "d0" : "d1")>
+                <td>
+                    @item.Product.ProductName
+                </td>
+                <td>
+                    @item.Count
+                </td>
+                <td>
+                    @((item.Product.BaseNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @(item.Discount)%
+                </td>
+                <td>
+                    @((item.FinalNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalNetValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalTaxValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

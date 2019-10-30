@@ -20,16 +20,19 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rate)%
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.TaxRateId">Edytuj</a> |
-                <a asp-action="Delete" asp-route-id="@item.TaxRateId">Usuń</a>
-            </td>
-        </tr>
-}
+        @{ bool row = true; }
+        @foreach (var item in Model)
+        {
+            row = !row;
+            <tr class=@(row ? "d0" : "d1")>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rate)%
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.TaxRateId">Edytuj</a> |
+                    <a asp-action="Delete" asp-route-id="@item.TaxRateId">Usuń</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

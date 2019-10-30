@@ -1,0 +1,50 @@
+﻿@model Sozif.OrderPositions
+
+@{
+    ViewData["Title"] = "Edycja pozycji nowego zamówienia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edycja pozycji nowego zamówienia</h1>
+
+<div class="form-group">
+    <label class="control-label">Klient</label>
+    <input class="form-control" value="@ViewBag.Customer.ToString()" disabled="disabled" />
+</div>
+<div class="form-group">
+    <label class="control-label">Adres realizacji</label>
+    <input class="form-control" value="@ViewBag.Address.FullAddress" disabled="disabled" />
+</div>
+
+<h4>Edycja pozycji</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditNewOrderPosition">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="OrderId" />
+            <div class="form-group">
+                <label class="control-label">Produkt</label>
+                <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Ilość</label>
+                <input asp-for="Count" class="form-control" />
+                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Rabat</label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Zapisz zmiany" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId">Wróć do zamówienia</a>
+</div>
+

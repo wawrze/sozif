@@ -69,9 +69,11 @@
         </tr>
     </thead>
     <tbody>
+        @{ bool row = true; }
         @foreach (var item in Model.Addresses)
         {
-            <tr>
+            row = !row;
+            <tr class=@(row ? "d0" : "d1")>
                 <td>
                     @Html.DisplayFor(modelItem => item.Street)
                 </td>

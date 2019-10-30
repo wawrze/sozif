@@ -1,18 +1,18 @@
 ﻿@model IEnumerable<Sozif.Customers>
 
 @{
-    ViewData["Title"] = "Lista klientów";
+    ViewData["Title"] = "Nowe zamówienie";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Lista klientów</h1>
+<h1>Tworzenie zamówienia</h1>
 
-<p>
-    @if (Context.Session.GetString("EditCustomers") == "true")
-    {
-        <a asp-action="Create">Dodaj klienta</a>
-    }
-</p>
+<div>
+    <a asp-action="Index">Wróć do listy zamówień</a>
+</div>
+
+<hr />
+<h4>Wybierz klienta</h4>
 <table class="table">
     <thead>
         <tr>
@@ -38,7 +38,7 @@
         @foreach (var item in Model)
         {
             row = !row;
-            <tr onclick="location.href = '@(Url.Action("Details", "Customers", new { id = item.CustomerId }))'" class=@(row ? "d0" : "d1")>
+            <tr onclick="location.href = '@(Url.Action("Create", "Orders", new { id = item.CustomerId }))'" class=@(row ? "d0" : "d1")>
                 <td>
                     @Html.DisplayFor(modelItem => item.CustomerName)
                 </td>
@@ -57,7 +57,7 @@
                         {
                             if (address.IsMainAddress)
                             {
-                                <text>@address.FullAddress</text>
+                                <text>@address.ToString()</text>
                             }
                         }
                     }

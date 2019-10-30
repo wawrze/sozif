@@ -1,0 +1,115 @@
+﻿@model Sozif.Orders
+
+@{
+    ViewData["Title"] = "Nowe zamówienie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Tworzenie zamówienia</h1>
+
+<h4></h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="OrderNumber" class="form-control" hidden="hidden" value="temp" />
+            <input asp-for="OrderDate" class="form-control" hidden="hidden" value="@DateTime.Now" />
+            <input asp-for="RealisationDate" class="form-control" hidden="hidden" />
+            <input asp-for="InvoiceId" class="form-control" hidden="hidden" />
+            <input asp-for="UserId" class="form-control" hidden="hidden" value="@Context.Session.GetString("UserId")" />
+            <div class="form-group">
+                <label class="control-label">Klient</label>
+                <input asp-for="CustomerId" class="form-control" value="@ViewBag.Customer.CustomerId" hidden="hidden" />
+                <input class="form-control" value="@ViewBag.Customer.ToString()" disabled="disabled" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Adres realizacji</label>
+                <select asp-for="AddressId" class="form-control" asp-items="ViewBag.AddressId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Stwórz" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="DeleteOrder" asp-route-id="@Model.OrderId">Wróć do listy zamówień</a>
+</div>
+
+<hr />
+<h4>Pozycje zamówienia</h4>
+<p>
+    <a asp-action="CreateNewOrderPosition" asp-route-id="@Model.OrderId">Dodaj pozycję</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Produkt
+            </th>
+            <th>
+                Ilość
+            </th>
+            <th>
+                Cena netto
+            </th>
+            <th>
+                Rabat
+            </th>
+            <th>
+                Cena netto po rabacie
+            </th>
+            <th>
+                Suma netto
+            </th>
+            <th>
+                Suma VAT
+            </th>
+            <th>
+                Suma brutto
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model.OrderPositions)
+        {
+            row = !row;
+        <tr class=@(row ? "d0" : "d1")>
+            <td>
+                @item.Product.ProductName
+            </td>
+            <td>
+                @item.Count
+            </td>
+            <td>
+                @((item.Product.BaseNetPrice / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @if (item.Discount != null) {
+                <text>@(item.Discount)%</text>
+                }
+            </td>
+            <td>
+                @((item.FinalNetPrice / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @((item.FinalNetValue / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @((item.FinalTaxValue / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                <a asp-action="EditNewOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"> Edytuj</a> |
+                <a asp-action="DeleteNewOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"> Usuń</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

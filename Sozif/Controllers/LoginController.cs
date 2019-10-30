@@ -49,13 +49,14 @@ namespace Sozif.Controllers
                     string token = Guid.NewGuid().ToString();
                     Response.Cookies.Append("AUTH", token);
                     HttpContext.Session.SetString("AUTH", token);
+                    HttpContext.Session.SetString("UserId", user.UserId.ToString());
                     HttpContext.Session.SetString("EditUsers", perms.EditUsers ? "true" : "false");
                     HttpContext.Session.SetString("EditProducts", perms.EditProducts ? "true" : "false");
                     HttpContext.Session.SetString("EditCustomers", perms.EditCustomers ? "true" : "false");
                     HttpContext.Session.SetString("EditOrders", perms.EditOrders ? "true" : "false");
                     HttpContext.Session.SetString("EditInvoices", perms.EditInvoices ? "true" : "false");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Orders");
                 }
             }
             ViewBag.LoginMessage = message;
