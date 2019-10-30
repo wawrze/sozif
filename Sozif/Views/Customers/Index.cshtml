@@ -8,7 +8,10 @@
 <h1>Lista klientów</h1>
 
 <p>
-    <a asp-action="Create">Dodaj klienta</a>
+    @if (Context.Session.GetString("EditCustomers") == "true")
+    {
+        <a asp-action="Create">Dodaj klienta</a>
+    }
 </p>
 <table class="table">
     <thead>
