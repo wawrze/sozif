@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,6 +43,10 @@ namespace Sozif.Controllers
         // GET: Customers/Create
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
@@ -50,6 +55,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CustomerId,CustomerName,Nip,ContactPerson,PhoneNumber")] Customers customers)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(customers);
@@ -62,6 +71,10 @@ namespace Sozif.Controllers
         // GET: Customers/CreateAddress
         public async Task<IActionResult> CreateAddress(int? id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -80,6 +93,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAddress(int id, [Bind("AddressId,Street,PostalCode,City,IsMainAddress,CustomerId")] Addresses addresses)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (ModelState.IsValid)
             {
                 if (addresses.IsMainAddress)
@@ -97,6 +114,10 @@ namespace Sozif.Controllers
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -115,6 +136,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CustomerId,CustomerName,NipString,ContactPerson,PhoneNumberString")] Customers customers)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id != customers.CustomerId)
             {
                 return NotFound();
@@ -146,6 +171,10 @@ namespace Sozif.Controllers
         // GET: Customers/EditAddress/5
         public async Task<IActionResult> EditAddress(int? id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -169,6 +198,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAddress(int id, [Bind("AddressId,Street,PostalCode,City,IsMainAddress,CustomerId")] Addresses addresses)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id != addresses.AddressId)
             {
                 return NotFound();
@@ -208,6 +241,10 @@ namespace Sozif.Controllers
         // GET: Customers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -228,6 +265,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var customers = await _context.Customers.FindAsync(id);
             _context.Customers.Remove(customers);
             await _context.SaveChangesAsync();
@@ -237,6 +278,10 @@ namespace Sozif.Controllers
         // GET: Customers/DeleteAddress/5
         public async Task<IActionResult> DeleteAddress(int? id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -256,6 +301,10 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmedAddress(int id)
         {
+            if (HttpContext.Session.GetString("EditCustomers") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var addresses = await _context.Addresses.FindAsync(id);
             _context.Addresses.Remove(addresses);
             await _context.SaveChangesAsync();
