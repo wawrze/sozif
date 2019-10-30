@@ -1,0 +1,63 @@
+﻿@model Sozif.Addresses
+
+@{
+    ViewData["Title"] = "Usuwanie adresu klienta \"" + @Model.Customer.CustomerName + "\"";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Usuwanie adresu</h1>
+
+@if (!Model.IsMainAddress)
+{
+    <h3>Czy na pewno chcesz usunąć ten adres?</h3>
+}
+else
+{
+    <h5 class="error-message">Nie możesz usunąć głównego adresu klienta!</h5>
+}
+<div>
+    <h4>@Model.Customer.CustomerName</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Adres
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Street)
+        </dd>
+        <dt class="col-sm-2">
+            Kod pocztowy
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PostalCode)
+        </dd>
+        <dt class="col-sm-2">
+            Miasto
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.City)
+        </dd>
+        <dt class="col-sm-2">
+            Czy główny
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.IsMainAddress)
+            {
+                <text>TAK</text>
+            }
+            else
+            {
+                <text>NIE</text>
+            }
+        </dd>
+    </dl>
+
+    <form asp-action="DeleteAddress">
+        <input type="hidden" asp-for="AddressId" />
+        @if (!Model.IsMainAddress)
+        {
+            <input type="submit" value="Usuń" class="btn btn-danger" /><text> |</text>
+        }
+        <a asp-action="Edit" asp-route-id="@Model.CustomerId">Wróć do edycji klienta</a>
+    </form>
+</div>

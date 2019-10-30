@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Sozif;
 using Sozif.Attributes;
 using Sozif.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sozif.Controllers
 {
@@ -56,7 +53,7 @@ namespace Sozif.Controllers
                 var productToInsert = new Products();
                 productToInsert.ProductName = product.ProductName;
                 productToInsert.TaxRateId = product.TaxRateId;
-                productToInsert.BaseNetPrice = (int) (product.BaseNetPrice * 100);
+                productToInsert.BaseNetPrice = (int)(product.BaseNetPrice * 100);
 
                 _context.Add(productToInsert);
                 await _context.SaveChangesAsync();
@@ -86,7 +83,7 @@ namespace Sozif.Controllers
             var product = new ProductDTO();
             product.ProductId = products.ProductId;
             product.ProductName = products.ProductName;
-            product.BaseNetPrice = ((decimal) products.BaseNetPrice) / 100;
+            product.BaseNetPrice = ((decimal)products.BaseNetPrice) / 100;
             product.TaxRateId = products.TaxRateId;
 
             ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
@@ -112,7 +109,7 @@ namespace Sozif.Controllers
             var productToInsert = new Products();
             productToInsert.ProductId = product.ProductId;
             productToInsert.ProductName = product.ProductName;
-            productToInsert.BaseNetPrice = (int) (product.BaseNetPrice * 100);
+            productToInsert.BaseNetPrice = (int)(product.BaseNetPrice * 100);
             productToInsert.TaxRateId = product.TaxRateId;
 
             if (ModelState.IsValid)

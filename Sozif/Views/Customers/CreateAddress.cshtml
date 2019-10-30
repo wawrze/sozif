@@ -1,0 +1,47 @@
+﻿@model Sozif.Addresses
+
+@{
+    ViewData["Title"] = "Dodawanie adresu klienta \"" + ViewBag.Customer.CustomerName + "\"";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Dodawanie adresu</h1>
+
+<h4>@ViewBag.Customer.CustomerName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateAddress">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Adres</label>
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Kod pocztowy</label>
+                <input asp-for="PostalCode" class="form-control" />
+                <span asp-validation-for="PostalCode" pattern="[0-9-]{6,6}" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Miasto</label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsMainAddress" /> <b>Ustaw jako główny adres klienta</b>
+                </label>
+            </div>
+            <input hidden="hidden" asp-for="CustomerId" class ="form-control" value="@ViewBag.Customer.CustomerId"/>
+            <div class="form-group">
+                <input type="submit" value="Dodaj adres" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@ViewBag.Customer.CustomerId">Wróć do edycji klienta</a>
+</div>
+

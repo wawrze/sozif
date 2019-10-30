@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Sozif
+﻿namespace Sozif
 {
     public partial class InvoicePositions
     {

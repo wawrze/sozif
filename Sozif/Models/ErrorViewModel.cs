@@ -1,5 +1,3 @@
-using System;
-
 namespace Sozif.Models
 {
     public class ErrorViewModel

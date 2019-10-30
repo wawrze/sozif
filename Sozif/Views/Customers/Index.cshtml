@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Sozif.Customers>
+
+@{
+    ViewData["Title"] = "Lista klientów";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Lista klientów</h1>
+
+<p>
+    <a asp-action="Create">Dodaj klienta</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nazwa
+            </th>
+            <th>
+                NIP
+            </th>
+            <th>
+                Osoba do kontaktu
+            </th>
+            <th>
+                Nr telefonu
+            </th>
+            <th>
+                Adres
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NipString)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContactPerson)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumberString)
+                </td>
+                <td>
+                    @{
+                        foreach (Addresses address in item.Addresses)
+                        {
+                            if (address.IsMainAddress)
+                            {
+                                <text>@address.Street, @address.PostalCode @address.City  </text>
+                            }
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.CustomerId">Szczegóły</a>
+                    @if (Context.Session.GetString("EditCustomers") == "true")
+                    {
+                        <text> |</text><a asp-action="Edit" asp-route-id="@item.CustomerId"> Edytuj</a>
+                    }
+                    @if (Context.Session.GetString("EditCustomers") == "true")
+                    {
+                        <text> |</text><a asp-action="Delete" asp-route-id="@item.CustomerId">Usuń</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

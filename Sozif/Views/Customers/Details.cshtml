@@ -1,0 +1,89 @@
+﻿@model Sozif.Customers
+
+@{
+    ViewData["Title"] = "Szczegóły klienta \"" + Model.CustomerName + "\"";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Szczegóły klienta</h1>
+
+<div>
+    <h4>@Model.CustomerName</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Nazwa
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CustomerName)
+        </dd>
+        <dt class="col-sm-2">
+            NIP
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NipString)
+        </dd>
+        <dt class="col-sm-2">
+            Osoba do kontaktu
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ContactPerson)
+        </dd>
+        <dt class="col-sm-2">
+            Nr telefonu
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumberString)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.CustomerId">Edytuj</a> |
+    <a asp-action="Index">Wróć do listy</a>
+</div>
+<hr />
+<h4>Adresy klienta</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Adres
+            </th>
+            <th>
+                Kod pocztowy
+            </th>
+            <th>
+                Miasto
+            </th>
+            <th>
+                Czy główny
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Addresses)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Street)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>
+                <td>
+                    @if (item.IsMainAddress)
+                    {
+                        <text>TAK</text>
+                    }
+                    else
+                    {
+                        <text>NIE</text>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

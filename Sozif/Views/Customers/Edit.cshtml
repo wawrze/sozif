@@ -1,0 +1,103 @@
+﻿@model Sozif.Customers
+
+@{
+    ViewData["Title"] = "Edycja klienta \"" + Model.CustomerName + "\"";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edycja klienta</h1>
+
+<h4>@Model.CustomerName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CustomerId" />
+            <div class="form-group">
+                <label class="control-label">Nazwa klienta</label>
+                <input asp-for="CustomerName" class="form-control"/>
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">NIP</label>
+                <input asp-for="NipString" class="form-control" pattern="[0-9-]{10,13}" value="@Model.NipString"/>
+                <span asp-validation-for="NipString" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Osoba do kontaktu</label>
+                <input asp-for="ContactPerson" class="form-control" />
+                <span asp-validation-for="ContactPerson" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Numer telefonu</label>
+                <input asp-for="PhoneNumberString" class="form-control" pattern="[0-9-]{9,13}" value="@Model.PhoneNumberString"/>
+                <span asp-validation-for="PhoneNumberString" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Zapisz zmiany" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Wróć do listy klientów</a>
+</div>
+
+<hr />
+<h4>Adresy klienta</h4>
+<p>
+    <a asp-action="CreateAddress" asp-route-id="@Model.CustomerId">Dodaj adres</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Adres
+            </th>
+            <th>
+                Kod pocztowy
+            </th>
+            <th>
+                Miasto
+            </th>
+            <th>
+                Czy główny
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Addresses)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Street)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>
+                <td>
+                    @{
+                        if (item.IsMainAddress)
+                        {
+                            <text>TAK</text>
+                        }
+                        else
+                        {
+                            <text>NIE</text>
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditAddress" asp-route-id="@item.AddressId"> Edytuj</a> |
+                    <a asp-action="DeleteAddress" asp-route-id="@item.AddressId"> Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

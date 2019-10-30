@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sozif.Attributes;
 using Sozif.Models;
 using Sozif.Utils;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -71,7 +67,6 @@ namespace Sozif.Controllers
         {
             HttpContext.Session.Clear();
             Response.Cookies.Delete("AUTH");
-            Response.Cookies.Delete("AUTH_USER");
             return RedirectToAction("Index");
         }
     }

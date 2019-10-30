@@ -1,0 +1,46 @@
+﻿@model Sozif.Customers
+
+@{
+    ViewData["Title"] = "Usuwanie klienta \"" + Model.CustomerName + "\"";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Usuwanie klienta</h1>
+
+<h3>Czy na pewno chcesz usunąć tego klienta?</h3>
+<div>
+    <h4></h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Nazwa klienta
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CustomerName)
+        </dd>
+        <dt class = "col-sm-2">
+            NIP
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NipString)
+        </dd>
+        <dt class = "col-sm-2">
+            Osoba do kontaktu
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ContactPerson)
+        </dd>
+        <dt class = "col-sm-2">
+            Numer telefonu
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumberString)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="CustomerId" />
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        <a asp-action="Index">Wróć do listy klientów</a>
+    </form>
+</div>
