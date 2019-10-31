@@ -46,6 +46,14 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            int taxRatesWithSameRate = await _context.TaxRates.Where(t => t.Rate == taxRates.Rate).CountAsync();
+            if (taxRatesWithSameRate > 0)
+            {
+                ViewBag.ErrorMessage = "Istnieje już taka stawka VAT!";
+                return View(taxRates);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(taxRates);
@@ -87,6 +95,13 @@ namespace Sozif.Controllers
             if (id != taxRates.TaxRateId)
             {
                 return NotFound();
+            }
+
+            int taxRatesWithSameRate = await _context.TaxRates.Where(t => t.Rate == taxRates.Rate).CountAsync();
+            if (taxRatesWithSameRate > 0)
+            {
+                ViewBag.ErrorMessage = "Istnieje już taka stawka VAT!";
+                return View(taxRates);
             }
 
             if (ModelState.IsValid)

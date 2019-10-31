@@ -65,6 +65,15 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            int productsWithSameName = await _context.Products.Where(p => p.ProductName == product.ProductName).CountAsync();
+            if (productsWithSameName > 0)
+            {
+                ViewBag.ErrorMessage = "Istnieje już produkt o takiej nazwie!";
+                ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
+                return View(product);
+            }
+
             if (ModelState.IsValid)
             {
                 var productToInsert = new Products();
@@ -119,6 +128,14 @@ namespace Sozif.Controllers
             if (id != product.ProductId)
             {
                 return NotFound();
+            }
+
+            int productsWithSameName = await _context.Products.Where(p => p.ProductName == product.ProductName).CountAsync();
+            if (productsWithSameName > 0)
+            {
+                ViewBag.ErrorMessage = "Istnieje już produkt o takiej nazwie!";
+                ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
+                return View(product);
             }
 
             var productToInsert = new Products();
