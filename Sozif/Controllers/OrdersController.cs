@@ -297,7 +297,8 @@ namespace Sozif.Controllers
                     if (lastOrderDate.Month == todayDate.Month && lastOrderDate.Year == todayDate.Year)
                     {
                         numberInt = int.Parse(lastOrderNumberSplit[1]);
-                    } else
+                    }
+                    else
                     {
                         numberInt = 1;
                     }
@@ -319,7 +320,8 @@ namespace Sozif.Controllers
                 await _context.SaveChangesAsync();
 
                 List<OrderPositions> newOrderPositions = new List<OrderPositions>();
-                orderPositions.ForEach(op => {
+                orderPositions.ForEach(op =>
+                {
                     var newPosition = new OrderPositions();
                     newPosition.OrderId = orderToAdd.OrderId;
                     newPosition.ProductId = op.ProductId;
@@ -365,15 +367,22 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
-            var orders = await _context.Orders.FindAsync(id);
+            var orders = await _context.Orders
+                .Include(o => o.Address)
+                .Include(o => o.Customer)
+                .Include(o => o.Invoice)
+                .Include(o => o.User)
+                .Include(o => o.OrderPositions)
+                    .ThenInclude(op => op.Product)
+                        .ThenInclude(p => p.TaxRate)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
             if (orders == null)
             {
                 return NotFound();
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "City", orders.AddressId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerName", orders.CustomerId);
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "InvoiceId", "CustomerAddress", orders.InvoiceId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Firstname", orders.UserId);
+            var addresses = _context.Addresses.Where(a => a.CustomerId == orders.CustomerId);
+            ViewData["AddressId"] = new SelectList(addresses, "AddressId", "FullAddress", orders.AddressId);
+
             return View(orders);
         }
 
@@ -391,31 +400,184 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
+            var order = await _context.Orders
+                .Include(o => o.Address)
+                .Include(o => o.Customer)
+                .Include(o => o.Invoice)
+                .Include(o => o.User)
+                .Include(o => o.OrderPositions)
+                    .ThenInclude(op => op.Product)
+                    .ThenInclude(p => p.TaxRate)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+
+            order.AddressId = orders.AddressId;
+
+            try
+            {
+                _context.Update(order);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!OrdersExists(orders.OrderId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Orders/CreateOrderPosition/5
+        public async Task<IActionResult> CreateOrderPosition(int? id)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            ViewBag.Customer = order.Customer;
+            ViewBag.Address = order.Address;
+            ViewBag.OrderId = order.OrderId;
+
+            ViewData["ProductId"] = new SelectList(_context.Products.OrderBy(p => p.ProductName), "ProductId", "ProductName");
+            return View();
+        }
+
+        // POST: Orders/CreateOrderPosition/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOrderPosition(int id, [Bind("ProductId,OrderId,Count,Discount")] OrderPositions orderPosition)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(orders);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrdersExists(orders.OrderId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Add(orderPosition);
+                await _context.SaveChangesAsync();
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+                return RedirectToAction("Edit", new { id = id });
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "City", orders.AddressId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerName", orders.CustomerId);
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "InvoiceId", "CustomerAddress", orders.InvoiceId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Firstname", orders.UserId);
-            return View(orders);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
+            return View(orderPosition);
+        }
+
+        // GET: Orders/DeleteNewOrderPosition/5/?orderId=5
+        public async Task<IActionResult> DeleteNewOrderPosition(int? id, int? orderId)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null || orderId == null)
+            {
+                return NotFound();
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.Address)
+                .Include(o => o.Customer)
+                .Include(o => o.OrderPositions)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
+                .FirstOrDefaultAsync(m => m.OrderId == orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            var orderPosition = order.OrderPositions.FirstOrDefault(op => op.ProductId == id);
+            if (orderPosition == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Customer = order.Customer;
+            ViewBag.Address = order.Address;
+            ViewBag.OrderId = order.OrderId;
+
+            return View(orderPosition);
+        }
+
+        // POST: Orders/DeleteNewOrderPosition/5?orderId=5
+        [HttpPost, ActionName("DeleteNewOrderPosition")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteNewOrderPositionConfirmed(int id, int orderId)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var orderPosition = await _context.OrderPositions.FirstOrDefaultAsync(op => op.OrderId == orderId && op.ProductId == id);
+            _context.OrderPositions.Remove(orderPosition);
+            await _context.SaveChangesAsync();
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+            return RedirectToAction("Create", new { id = order.CustomerId, orderId = orderId });
+        }
+
+        // GET: Orders/DeleteOrderPosition/5/?orderId=5
+        public async Task<IActionResult> DeleteOrderPosition(int? id, int? orderId)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null || orderId == null)
+            {
+                return NotFound();
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.Address)
+                .Include(o => o.Customer)
+                .Include(o => o.OrderPositions)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
+                .FirstOrDefaultAsync(m => m.OrderId == orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            var orderPosition = order.OrderPositions.FirstOrDefault(op => op.ProductId == id);
+            if (orderPosition == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Customer = order.Customer;
+            ViewBag.Address = order.Address;
+            ViewBag.OrderId = order.OrderId;
+            ViewBag.OrderNumber = order.OrderNumber;
+            ViewBag.OrderDate = order.OrderDate;
+
+            return View(orderPosition);
+        }
+
+        // POST: Orders/DeleteOrderPosition/5?orderId=5
+        [HttpPost, ActionName("DeleteOrderPosition")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrderPositionConfirmed(int id, int orderId)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var orderPosition = await _context.OrderPositions.FirstOrDefaultAsync(op => op.OrderId == orderId && op.ProductId == id);
+            _context.OrderPositions.Remove(orderPosition);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Edit", new { id = orderId });
         }
 
         // GET: Orders/Delete/5

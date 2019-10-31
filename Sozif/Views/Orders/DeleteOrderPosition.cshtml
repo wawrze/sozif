@@ -1,0 +1,67 @@
+﻿@model Sozif.OrderPositions
+
+@{
+    ViewData["Title"] = "Usuwanie pozycji zamówienia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Usuwanie pozycji zamówienia</h1>
+
+<hr />
+<dl class="row">
+    <dt class="col-sm-2">
+        Numer zamówienia
+    </dt>
+    <dd class="col-sm-10">
+        @ViewBag.OrderNumber
+    </dd>
+    <dt class="col-sm-2">
+        Data zamówienia
+    </dt>
+    <dd class="col-sm-10">
+        @ViewBag.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)
+    </dd>
+    <dt class="col-sm-2">
+        Klient
+    </dt>
+    <dd class="col-sm-10">
+        @ViewBag.Customer.ToString()
+    </dd>
+    <dt class="col-sm-2">
+        Adres realizacji
+    </dt>
+    <dd class="col-sm-10">
+        @ViewBag.Address.FullAddress
+    </dd>
+</dl>
+<hr />
+
+<h3>Czy jesteś pewien, że chcesz usunąć tę pozycję?</h3>
+<div>
+    <h4>@Html.DisplayFor(model => model.Product.ProductName)</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Ilość
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Count)
+        </dd>
+        @if (Model.Discount != null)
+        {
+            <dt class="col-sm-2">
+                Rabat
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Discount)%
+            </dd>
+        }
+    </dl>
+
+    <form asp-action="DeleteOrderPosition">
+        <input type="hidden" asp-for="OrderId" />
+        <input type="hidden" asp-for="ProductId" />
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        <a asp-action="Edit" asp-route-id="@ViewBag.OrderId">Wróć do edycji zamówienia</a>
+    </form>
+</div>

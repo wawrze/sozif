@@ -1,62 +1,122 @@
 ﻿@model Sozif.Orders
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edycja zamówienia nr " + Model.OrderNumber;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>Edycja zamówienia</h1>
 
-<h4>Orders</h4>
+<h4>@Model.OrderNumber</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="OrderId" />
+            <input asp-for="OrderNumber" class="form-control" hidden="hidden" value="@Model.OrderNumber" />
             <div class="form-group">
-                <label asp-for="OrderNumber" class="control-label"></label>
-                <input asp-for="OrderNumber" class="form-control" />
-                <span asp-validation-for="OrderNumber" class="text-danger"></span>
+                <label class="control-label">Data zamówienia</label>
+                <input asp-for="OrderDate" class="form-control" value="@Model.OrderDate" hidden="hidden" />
+                <input class="form-control" value="@Model.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)" disabled="disabled" />
+            </div>
+            <input asp-for="RealisationDate" class="form-control" hidden="hidden" />
+            <input asp-for="InvoiceId" class="form-control" hidden="hidden" />
+            <input asp-for="UserId" class="form-control" hidden="hidden" value="@Model.UserId" />
+            <div class="form-group">
+                <label class="control-label">Klient</label>
+                <input asp-for="CustomerId" class="form-control" hidden="hidden" value="@Model.CustomerId" />
+                <input class="form-control" value="@Model.Customer.ToString()" disabled="disabled" />
             </div>
             <div class="form-group">
-                <label asp-for="OrderDate" class="control-label"></label>
-                <input asp-for="OrderDate" class="form-control" />
-                <span asp-validation-for="OrderDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RealisationDate" class="control-label"></label>
-                <input asp-for="RealisationDate" class="form-control" />
-                <span asp-validation-for="RealisationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InvoiceId" class="control-label"></label>
-                <select asp-for="InvoiceId" class="form-control" asp-items="ViewBag.InvoiceId"></select>
-                <span asp-validation-for="InvoiceId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerId" class="control-label"></label>
-                <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerId"></select>
-                <span asp-validation-for="CustomerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AddressId" class="control-label"></label>
+                <label class="control-label">Adres realizacji</label>
                 <select asp-for="AddressId" class="form-control" asp-items="ViewBag.AddressId"></select>
                 <span asp-validation-for="AddressId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Zapisz zmiany" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Wróć do listy zamówień</a>
 </div>
 
+<hr />
+<h4>Pozycje zamówienia</h4>
+<p>
+    <a asp-action="CreateOrderPosition" asp-route-id="@Model.OrderId">Dodaj pozycję</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Produkt
+            </th>
+            <th>
+                Ilość
+            </th>
+            <th>
+                Cena netto
+            </th>
+            <th>
+                Rabat
+            </th>
+            <th>
+                Cena netto po rabacie
+            </th>
+            <th>
+                Suma netto
+            </th>
+            <th>
+                Suma VAT
+            </th>
+            <th>
+                Suma brutto
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model.OrderPositions)
+        {
+            row = !row;
+            <tr class=@(row ? "d0" : "d1")>
+                <td>
+                    @item.Product.ProductName
+                </td>
+                <td>
+                    @item.Count
+                </td>
+                <td>
+                    @((item.Product.BaseNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @if (item.Discount != null)
+                    {
+                        <text>@(item.Discount)%</text>
+                    }
+                </td>
+                <td>
+                    @((item.FinalNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalNetValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalTaxValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    <a asp-action="EditOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"> Edytuj</a> |
+                    <a asp-action="DeleteOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"> Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
