@@ -20,7 +20,7 @@ namespace Sozif.Controllers
         // GET: TaxRates
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -30,7 +30,7 @@ namespace Sozif.Controllers
         // GET: TaxRates/Create
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -42,7 +42,7 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("TaxRateId,Rate")] TaxRates taxRates)
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -66,7 +66,7 @@ namespace Sozif.Controllers
         // GET: TaxRates/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -88,7 +88,7 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TaxRateId,Rate")] TaxRates taxRates)
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -130,7 +130,7 @@ namespace Sozif.Controllers
         // GET: TaxRates/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -146,6 +146,12 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
+            int productsWithThisTaxRate = await _context.Products.Where(p => p.TaxRateId == id).CountAsync();
+            if (productsWithThisTaxRate > 0)
+            {
+                ViewBag.ErrorMessage = "Ta stawka VAT jest przypisana do " + productsWithThisTaxRate + " produktów - nie możesz jej usunąć!";
+            }
+
             return View(taxRates);
         }
 
@@ -154,7 +160,7 @@ namespace Sozif.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (HttpContext.Session.GetString("EditUsers") == "false")
+            if (HttpContext.Session.GetString("EditProducts") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }

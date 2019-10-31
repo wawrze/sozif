@@ -153,18 +153,40 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
+            int usersOrders = await _context.Orders.Where(o => o.UserId == id).CountAsync();
+            if (usersOrders > 0)
+            {
+                ViewBag.ErrorMessage = "Do użytkownika jest przypisanych " + usersOrders + " zamówień. Aby go usunąć musisz wybrać użytkownika, który przejmie te zamówienia!";
+            }
+
+            var usersToPassOrders = await _context.Users
+                .Include(u => u.PermLevelNavigation)
+                .Where(u => u.PermLevelNavigation.EditOrders && u.UserId != id)
+                .ToListAsync();
+
+            ViewData["UserId"] = new SelectList(usersToPassOrders, "UserId", "UserData");
+
             return View(users);
         }
 
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int UserId)
         {
             if (HttpContext.Session.GetString("EditUsers") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            var invoicesToUpdate = await _context.Invoices.Where(i => i.UserId == id).ToListAsync();
+            invoicesToUpdate.ForEach(i => i.UserId = null);
+            _context.UpdateRange(invoicesToUpdate);
+            await _context.SaveChangesAsync();
+            var ordersToUpdate = await _context.Orders.Where(o => o.UserId == id).ToListAsync();
+            ordersToUpdate.ForEach(o => o.UserId = UserId);
+            _context.UpdateRange(ordersToUpdate);
+            await _context.SaveChangesAsync();
             var users = await _context.Users.FindAsync(id);
             _context.Users.Remove(users);
             await _context.SaveChangesAsync();

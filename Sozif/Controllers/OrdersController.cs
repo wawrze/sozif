@@ -177,20 +177,43 @@ namespace Sozif.Controllers
             var orderPositionInDB = await _context.OrderPositions
                 .Include(op => op.Product)
                 .FirstOrDefaultAsync(op => op.OrderId == orderPosition.OrderId && op.ProductId == orderPosition.ProductId);
-            if (orderPositionInDB == null)
-            {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(orderPosition);
-                    await _context.SaveChangesAsync();
-                    var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
-                    return RedirectToAction("Create", new { id = order.CustomerId, orderId = id });
-                }
-            }
-            else
+            if (orderPositionInDB != null)
             {
                 errorMessage = "Zamówienie już zawiera pozycję \"" + orderPositionInDB.Product.ProductName + "\"!";
             }
+            if (orderPosition.Discount < 0)
+            {
+                errorMessage = "Rabat nie może być ujemny!";
+            }
+            if (orderPosition.Discount > 10)
+            {
+                errorMessage = "Rabat nie może być większy niż 10%!";
+            }
+            if (orderPosition.Count < 0)
+            {
+                errorMessage = "Ilość produktu nie może być ujemna!";
+            }
+            if (orderPosition.Count == 0)
+            {
+                errorMessage = "Ilość produktu musi być różna od zera!";
+            }
+
+            if (ModelState.IsValid && errorMessage == "")
+            {
+                _context.Add(orderPosition);
+                await _context.SaveChangesAsync();
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+                return RedirectToAction("Create", new { id = order.CustomerId, orderId = id });
+            }
+
+            var orderInfo = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            ViewBag.Customer = orderInfo.Customer;
+            ViewBag.Address = orderInfo.Address;
+            ViewBag.OrderId = orderInfo.OrderId;
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
             ViewBag.ErrorMessage = errorMessage;
             return View(orderPosition);
@@ -240,15 +263,32 @@ namespace Sozif.Controllers
                 return NotFound();
             }
             var order = await _context.Orders
-        .Include(o => o.Customer)
-        .Include(o => o.Address)
-        .FirstOrDefaultAsync(o => o.OrderId == orderId);
+                .Include(o => o.Customer)
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
             if (order == null)
             {
                 return NotFound();
             }
+            string errorMessage = "";
+            if (orderPosition.Discount < 0)
+            {
+                errorMessage = "Rabat nie może być ujemny!";
+            }
+            if (orderPosition.Discount > 10)
+            {
+                errorMessage = "Rabat nie może być większy niż 10%!";
+            }
+            if (orderPosition.Count < 0)
+            {
+                errorMessage = "Ilość produktu nie może być ujemna!";
+            }
+            if (orderPosition.Count == 0)
+            {
+                errorMessage = "Ilość produktu musi być różna od zera!";
+            }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && errorMessage == "")
             {
                 try
                 {
@@ -271,8 +311,14 @@ namespace Sozif.Controllers
             ViewBag.Customer = order.Customer;
             ViewBag.Address = order.Address;
             ViewBag.OrderId = order.OrderId;
+            ViewBag.ErrorMessage = errorMessage;
+            var position = await _context.OrderPositions
+                .Include(op => op.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ProductId == id);
+            position.Count = orderPosition.Count;
+            position.Discount = orderPosition.Discount;
 
-            return View(orderPosition);
+            return View(position);
         }
 
         // GET: Orders/EditOrderPosition/5
@@ -328,8 +374,25 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            string errorMessage = "";
+            if (orderPosition.Discount < 0)
+            {
+                errorMessage = "Rabat nie może być ujemny!";
+            }
+            if (orderPosition.Discount > 10)
+            {
+                errorMessage = "Rabat nie może być większy niż 10%!";
+            }
+            if (orderPosition.Count < 0)
+            {
+                errorMessage = "Ilość produktu nie może być ujemna!";
+            }
+            if (orderPosition.Count == 0)
+            {
+                errorMessage = "Ilość produktu musi być różna od zera!";
+            }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && errorMessage == "")
             {
                 try
                 {
@@ -354,8 +417,14 @@ namespace Sozif.Controllers
             ViewBag.OrderId = order.OrderId;
             ViewBag.OrderNumber = order.OrderNumber;
             ViewBag.OrderDate = order.OrderDate;
+            ViewBag.ErrorMessage = errorMessage;
+            var position = await _context.OrderPositions
+                .Include(op => op.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ProductId == id);
+            position.Count = orderPosition.Count;
+            position.Discount = orderPosition.Discount;
 
-            return View(orderPosition);
+            return View(position);
         }
 
         // POST: Orders/Create/5
@@ -586,17 +655,32 @@ namespace Sozif.Controllers
             var orderPositionInDB = await _context.OrderPositions
                 .Include(op => op.Product)
                 .FirstOrDefaultAsync(op => op.OrderId == orderPosition.OrderId && op.ProductId == orderPosition.ProductId);
-            if (orderPositionInDB == null)
-            {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(orderPosition);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction("Edit", new { id = id });
-                }
-            } else
+            if (orderPositionInDB != null)
             {
                 errorMessage = "Zamówienie już zawiera pozycję \"" + orderPositionInDB.Product.ProductName + "\"!";
+            }
+            if (orderPosition.Discount < 0)
+            {
+                errorMessage = "Rabat nie może być ujemny!";
+            }
+            if (orderPosition.Discount > 10)
+            {
+                errorMessage = "Rabat nie może być większy niż 10%!";
+            }
+            if (orderPosition.Count < 0)
+            {
+                errorMessage = "Ilość produktu nie może być ujemna!";
+            }
+            if (orderPosition.Count == 0)
+            {
+                errorMessage = "Ilość produktu musi być różna od zera!";
+            }
+
+            if (ModelState.IsValid && errorMessage == "")
+            {
+                _context.Add(orderPosition);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Edit", new { id = id });
             }
             var order = await _context.Orders
                 .Include(o => o.Customer)

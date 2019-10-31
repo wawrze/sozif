@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sozif.Attributes;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -299,11 +300,16 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
-            var customers = await _context.Customers
-                .FirstOrDefaultAsync(m => m.CustomerId == id);
+            var customers = await _context.Customers.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (customers == null)
             {
                 return NotFound();
+            }
+
+            int customerOrdersCount = await _context.Orders.Where(o => o.CustomerId == customers.CustomerId).CountAsync();
+            if (customerOrdersCount > 0)
+            {
+                ViewBag.ErrorMessage = "Do klienta jest przypisanych " + customerOrdersCount + " zamówień. Zostaną one usunięte razem z klientem.";
             }
 
             return View(customers);
@@ -318,6 +324,17 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            var invoicesToUpdate = await _context.Invoices.Where(i => i.CustomerId == id).ToListAsync();
+            invoicesToUpdate.ForEach(i => i.CustomerId = null);
+            _context.UpdateRange(invoicesToUpdate);
+            await _context.SaveChangesAsync();
+            var ordersToDelete = await _context.Orders.Include(o => o.OrderPositions).Where(o => o.CustomerId == id).ToListAsync();
+            var orderPositionsToDelete = new List<OrderPositions>();
+            ordersToDelete.ForEach(o => orderPositionsToDelete.AddRange(o.OrderPositions));
+            _context.OrderPositions.RemoveRange(orderPositionsToDelete);
+            await _context.SaveChangesAsync();
+            _context.Orders.RemoveRange(ordersToDelete);
+            await _context.SaveChangesAsync();
             var customers = await _context.Customers.FindAsync(id);
             var addresses = await _context.Addresses.Where(a => a.CustomerId == customers.CustomerId).ToListAsync();
             _context.Addresses.RemoveRange(addresses);

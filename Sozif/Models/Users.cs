@@ -17,6 +17,13 @@ namespace Sozif
         public string Lastname { get; set; }
         public int PermLevel { get; set; }
 
+        public string UserData { 
+            get
+            {
+                return Username + "(" + Firstname + " " + Lastname + ")";
+            } 
+        }
+
         public virtual UserPermissions PermLevelNavigation { get; set; }
         public virtual ICollection<Invoices> Invoices { get; set; }
         public virtual ICollection<Orders> Orders { get; set; }

@@ -188,6 +188,12 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
+            int orderPositionsWithThisProduct = await _context.OrderPositions.Where(op => op.ProductId == id).CountAsync();
+            if (orderPositionsWithThisProduct > 0)
+            {
+                ViewBag.ErrorMessage = "Ten produkt występuje w " + orderPositionsWithThisProduct + " pozycjach zamówień. Usunięcie go spowoduje usunięcie tych pozycji.";
+            }
+
             return View(products);
         }
 
@@ -201,6 +207,9 @@ namespace Sozif.Controllers
                 return RedirectToAction("Index", "Home");
             }
             var products = await _context.Products.FindAsync(id);
+            var orderPositions = await _context.OrderPositions.Where(op => op.ProductId == id).ToListAsync();
+            _context.OrderPositions.RemoveRange(orderPositions);
+            await _context.SaveChangesAsync();
             _context.Products.Remove(products);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
