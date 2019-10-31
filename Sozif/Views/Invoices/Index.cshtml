@@ -1,0 +1,96 @@
+﻿@model IEnumerable<Sozif.Invoices>
+
+@{
+    ViewData["Title"] = "Lista faktur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Lista faktur</h1>
+
+<p>
+    @if (Context.Session.GetString("EditInvoices") == "true")
+    {
+        <a asp-action="ChooseCustomer">Wystaw nową fakturę</a>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Numer faktury
+            </th>
+            <th>
+                Data wystawienia
+            </th>
+            <th>
+                Nazwa klienta
+            </th>
+            <th>
+                NIP klienta
+            </th>
+            <th>
+                Adres klienta
+            </th>
+            <th>
+                Ilość pozycji
+            </th>
+            <th>
+                Wartość netto
+            </th>
+            <th>
+                Wartość VAT
+            </th>
+            <th>
+                Wartość brutto
+            </th>
+            <th>
+                Termin płatności
+            </th>
+            <th>
+                Osoba wystawiająca
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model)
+        {
+            row = !row;
+            <tr onclick="location.href = '@(Url.Action("Details", "Invoices", new { id = item.InvoiceId }))'" class=@(row ? "d0" : "d1")>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                </td>
+                <td>
+                    @(item.InvoiceDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerName)
+                </td>
+                <td>
+                    @item.NipString
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerAddress), @Html.DisplayFor(modelItem => item.CustomerPostalCode) @Html.DisplayFor(modelItem => item.CustomerCity)
+                </td>
+                <td>
+                    @item.PositionsCount
+                </td>
+                <td>
+                    @((item.NetValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.TaxValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.GrossValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @(item.InvoiceDate.AddDays(item.DaysToPay).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                </td>
+                <td>
+                    @item.UserName
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

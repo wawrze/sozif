@@ -1,0 +1,158 @@
+﻿@model Sozif.Invoices
+
+@{
+    ViewData["Title"] = "Szczegóły faktury nr " + Model.InvoiceNumber;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Szczegóły faktury</h1>
+
+<div>
+    <h4>@Model.InvoiceNumber</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Numer faktury
+        </dt>
+        <dd class="col-sm-10">
+            @Model.InvoiceNumber
+        </dd>
+        <dt class="col-sm-2">
+            Data wystawienia
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.InvoiceDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+        </dd>
+        <dt class="col-sm-2">
+            Nazwa klienta
+        </dt>
+        <dd class="col-sm-10">
+            @Model.CustomerName
+        </dd>
+        <dt class="col-sm-2">
+            NIP klienta
+        </dt>
+        <dd class="col-sm-10">
+            @Model.NipString
+        </dd>
+        <dt class="col-sm-2">
+            Adres klienta
+        </dt>
+        <dd class="col-sm-10">
+            @Model.CustomerAddress, @Model.CustomerPostalCode @Model.CustomerCity
+        </dd>
+        <dt class="col-sm-2">
+            Ilość pozycji
+        </dt>
+        <dd class="col-sm-10">
+            @Model.PositionsCount
+        </dd>
+        <dt class="col-sm-2">
+            Wartość netto
+        </dt>
+        <dd class="col-sm-10">
+            @((Model.NetValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Wartość VAT
+        </dt>
+        <dd class="col-sm-10">
+            @((Model.TaxValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Wartość brutto
+        </dt>
+        <dd class="col-sm-10">
+            @((Model.GrossValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Termin płatności
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.InvoiceDate.AddDays(Model.DaysToPay).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+        </dd>
+        <dt class="col-sm-2">
+            Osoba wystawiająca
+        </dt>
+        <dd class="col-sm-10">
+            @Model.UserName
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Wróć do listy faktur</a>
+</div>
+<hr />
+<h4>Pozycje faktury</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nazwa produktu
+            </th>
+            <th>
+                Ilość
+            </th>
+            <th>
+                Cena netto
+            </th>
+            <th>
+                Rabat
+            </th>
+            <th>
+                Cena netto po rabacie
+            </th>
+            <th>
+                Suma netto
+            </th>
+            <th>
+                Stawka VAT
+            </th>
+            <th>
+                Suma VAT
+            </th>
+            <th>
+                Suma brutto
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model.InvoicePositions)
+        {
+            row = !row;
+        <tr class=@(row ? "d0" : "d1")>
+            <td>
+                @item.ProductName
+            </td>
+            <td>
+                @item.ProductCount
+            </td>
+            <td>
+                @((item.ProductNetPrice / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @if (item.Discount != null)
+                {
+                    <text>@(item.Discount)%</text>
+                }
+            </td>
+            <td>
+                @((item.FinalNetPrice / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @((item.FinalNetValue / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @(item.ProductTaxRate)%
+            </td>
+            <td>
+                @((item.FinalTaxValue / 100.0).ToString("0.00")) zł
+            </td>
+            <td>
+                @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
