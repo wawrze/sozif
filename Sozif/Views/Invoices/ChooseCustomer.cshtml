@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<Sozif.Customers>
 
 @{
-    ViewData["Title"] = "Nowe zamówienie";
+    ViewData["Title"] = "Wystawianie faktury";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Tworzenie zamówienia</h1>
+<h1>Wystawianie faktury</h1>
 
 <div>
-    <a asp-action="Index">Wróć do listy zamówień</a>
+    <a asp-action="Index">Wróć do listy faktur</a>
 </div>
 
 <hr />
@@ -38,7 +38,7 @@
         @foreach (var item in Model)
         {
             row = !row;
-            <tr onclick="location.href = '@(Url.Action("Create", "Orders", new { id = item.CustomerId }))'" class=@(row ? "d0" : "d1")>
+            <tr onclick="location.href = '@(Url.Action("ChooseOrders", "Invoices", new { id = item.CustomerId }))'" class=@(row ? "d0" : "d1")>
                 <td>
                     @Html.DisplayFor(modelItem => item.CustomerName)
                 </td>

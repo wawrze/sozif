@@ -1,0 +1,87 @@
+﻿@model Sozif.Models.InvoiceDTO
+
+@{
+    ViewData["Title"] = "Wystawianie faktury";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Wystawianie faktury</h1>
+
+<hr />
+<form method="post">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label class="control-label">Nazwa klienta</label>
+                <input asp-for="@Model.CustomerName" class="form-control" value="@Model.CustomerName" disabled="disabled" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">NIP klienta</label>
+                <input asp-for="@Model.CustomerNip" class="form-control" value="@Model.CustomerNip" disabled="disabled" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Nazwa klienta</label>
+                <input asp-for="@Model.CustomerAddress" class="form-control" value="@Model.CustomerAddress" disabled="disabled" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Dni do płatności</label>
+                <input asp-for="@Model.DaysToPay" class="form-control" value="@Model.DaysToPay" type="number" min="0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Wystaw fakturę" class="btn btn-primary" /> |
+        <a asp-action="Index"> Wróć do listy faktur</a>
+    </div>
+    <hr />
+    <h4>Wybierz zamówienia</h4>
+    <h5 class="error-message">@ViewBag.ErrorMessage</h5>
+    <table class="table">
+        <tr>
+            <th hidden="hidden" />
+            <th>
+                Włącz do faktury
+            </th>
+            <th>
+                Numer zamówienia
+            </th>
+            <th>
+                Data zamówienia
+            </th>
+            <th>
+                Adres realizacji
+            </th>
+            <th>
+                Ilość pozycji
+            </th>
+            <th>
+                Wartość netto
+            </th>
+            <th>
+                Wartość VAT
+            </th>
+            <th>
+                Wartość brutto
+            </th>
+            <th>
+                Osoba przyjmująca
+            </th>
+        </tr>
+        @for (var i = 0; i < ViewBag.Orders.Count; i++)
+        {
+            <tr class=@(i % 2 == 0 ? "d0" : "d1")>
+                <td hidden="hidden"><input asp-for="@Model.Orders[i].Key" value="@ViewBag.Orders[i].OrderId" /></td>
+                <td><input asp-for="@Model.Orders[i].Value" /></td>
+                <td>@ViewBag.Orders[i].OrderNumber</td>
+                <td>@ViewBag.Orders[i].OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@ViewBag.Orders[i].Address.FullAddress</td>
+                <td>@ViewBag.Orders[i].PositionsCount</td>
+                <td>@((ViewBag.Orders[i].NetValue / 100.0).ToString("0.00")) zł</td>
+                <td>@((ViewBag.Orders[i].TaxValue / 100.0).ToString("0.00")) zł</td>
+                <td>@((ViewBag.Orders[i].GrossValue / 100.0).ToString("0.00")) zł</td>
+                <td>@ViewBag.Orders[i].UserName</td>
+            </tr>
+        }
+    </table>
+</form>
