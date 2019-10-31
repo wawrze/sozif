@@ -108,11 +108,17 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
+            var oldUser = await _context.Users.Where(u => u.UserId == id).AsNoTracking().FirstOrDefaultAsync();
+
+            if (oldUser.Password != users.Password)
+            {
+                users.Password = PasswordHelper.HashPassword(users.Password);
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // TODO: check if password is empty or the same as in DB (to not change password)
                     _context.Update(users);
                     await _context.SaveChangesAsync();
                 }
