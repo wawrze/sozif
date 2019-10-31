@@ -1,64 +1,132 @@
 ﻿@model Sozif.Orders
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Usuwanie zamówienia nr " + Model.OrderNumber;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<h1>Usuwanie zamówienia</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Czy jesteś pewien, że chcesz usunąć to zamówienie i wszystkie jego pozycje?</h3>
 <div>
-    <h4>Orders</h4>
+    <h4>@Model.OrderNumber</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNumber)
+        <dt class="col-sm-2">
+            Numer zamówienia
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.OrderNumber)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
+        <dt class="col-sm-2">
+            Klient
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
+        <dd class="col-sm-10">
+            @(Model.Customer.ToString())
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RealisationDate)
+        <dt class="col-sm-2">
+            Data zamówienia
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RealisationDate)
+        <dd class="col-sm-10">
+            @(Model.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
+        <dt class="col-sm-2">
+            Adres realizacji
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address.City)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer)
+        <dd class="col-sm-10">
+            @(Model.Address.FullAddress)
+        </dd>
+        <dt class="col-sm-2">
+            Wartość netto
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Customer.CustomerName)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Invoice)
+        <dd class="col-sm-10">
+            @((Model.NetValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Wartość VAT
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Invoice.CustomerAddress)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
+        <dd class="col-sm-10">
+            @((Model.TaxValue / 100.0).ToString("0.00")) zł
+        </dd>
+        <dt class="col-sm-2">
+            Wartość brutto
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Firstname)
-        </dd class>
+        <dd class="col-sm-10">
+            @((Model.GrossValue / 100.0).ToString("0.00")) zł
+        </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="OrderId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        <a asp-action="Index">Wróć do listy zamówień</a>
     </form>
 </div>
+<hr />
+<h4>Pozycje zamówienia</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Produkt
+            </th>
+            <th>
+                Ilość
+            </th>
+            <th>
+                Cena netto
+            </th>
+            <th>
+                Rabat
+            </th>
+            <th>
+                Cena netto po rabacie
+            </th>
+            <th>
+                Suma netto
+            </th>
+            <th>
+                Suma VAT
+            </th>
+            <th>
+                Suma brutto
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ bool row = true; }
+        @foreach (var item in Model.OrderPositions)
+        {
+            row = !row;
+            <tr class=@(row ? "d0" : "d1")>
+                <td>
+                    @item.Product.ProductName
+                </td>
+                <td>
+                    @item.Count
+                </td>
+                <td>
+                    @((item.Product.BaseNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @if (item.Discount != null)
+                    {
+                        <text>@(item.Discount)%</text>
+                    }
+                </td>
+                <td>
+                    @((item.FinalNetPrice / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalNetValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalTaxValue / 100.0).ToString("0.00")) zł
+                </td>
+                <td>
+                    @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

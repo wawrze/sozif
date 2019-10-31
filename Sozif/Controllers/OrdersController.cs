@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -26,6 +27,7 @@ namespace Sozif.Controllers
         public async Task<IActionResult> Index()
         {
             var sozifContext = _context.Orders
+                .Where(o => !o.OrderNumber.Contains("R"))
                 .OrderByDescending(o => o.OrderId)
                 .Include(o => o.Address)
                 .Include(o => o.Customer)
@@ -62,14 +64,19 @@ namespace Sozif.Controllers
             return View(orders);
         }
 
-        // GET: Orders/Create
+        // GET: Orders/ChooseCustomer
         public async Task<IActionResult> ChooseCustomer()
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
-            var customers = await _context.Customers.Include(c => c.Addresses).ToListAsync();
+            string userId = HttpContext.Session.GetString("UserId");
+            if (userId == null) RedirectToAction("Index", "Home");
+            var userWorkingOrder = await _context.Orders.FirstOrDefaultAsync(o => o.UserId == int.Parse(userId) && o.OrderNumber.Contains("R"));
+            if (userWorkingOrder != null) return RedirectToAction("Create", new { id = userWorkingOrder.CustomerId, orderId = userWorkingOrder.OrderId });
+
+            var customers = await _context.Customers.Include(c => c.Addresses).OrderBy(c => c.CustomerName).ToListAsync();
             return View(customers);
         }
 
@@ -137,7 +144,7 @@ namespace Sozif.Controllers
             return View(order);
         }
 
-        // GET: Orders/CreateNewOrderPosition
+        // GET: Orders/CreateNewOrderPosition/5
         public async Task<IActionResult> CreateNewOrderPosition(int? id)
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
@@ -153,11 +160,11 @@ namespace Sozif.Controllers
             ViewBag.Address = order.Address;
             ViewBag.OrderId = order.OrderId;
 
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
+            ViewData["ProductId"] = new SelectList(_context.Products.OrderBy(p => p.ProductName), "ProductId", "ProductName");
             return View();
         }
 
-        // POST: Orders/CreateNewOrderPosition
+        // POST: Orders/CreateNewOrderPosition/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateNewOrderPosition(int? id, [Bind("ProductId,OrderId,Count,Discount")] OrderPositions orderPosition)
@@ -203,7 +210,6 @@ namespace Sozif.Controllers
             ViewBag.Customer = order.Customer;
             ViewBag.Address = order.Address;
             ViewBag.OrderId = order.OrderId;
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
 
             return View(position);
         }
@@ -248,35 +254,103 @@ namespace Sozif.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Create", new { id = order.CustomerId, orderId = id });
+                return RedirectToAction("Create", new { id = order.CustomerId, orderId = order.OrderId });
             }
             ViewBag.Customer = order.Customer;
             ViewBag.Address = order.Address;
             ViewBag.OrderId = order.OrderId;
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
+
             return View(orderPosition);
         }
 
-        // POST: Orders/Create
+        // POST: Orders/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,OrderNumber,OrderDate,RealisationDate,InvoiceId,UserId,CustomerId,AddressId")] Orders orders)
+        public async Task<IActionResult> Create(int? id, [Bind("OrderId,OrderNumber,OrderDate,RealisationDate,InvoiceId,UserId,CustomerId,AddressId")] Orders orders)
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
-            if (ModelState.IsValid)
+            var orderPositions = await _context.OrderPositions.Where(op => op.OrderId == orders.OrderId).ToListAsync();
+            if (orderPositions.Count == 0) ViewBag.ErrorMessage = "Nie możesz zapisać zamówienia bez pozycji!";
+            if (orderPositions.Count > 0)
             {
-                _context.Add(orders);
+                Orders orderToAdd = new Orders();
+                var lastOrderInDB = await _context.Orders
+                    .Where(o => !o.OrderNumber.Contains("R"))
+                    .OrderByDescending(o => o.OrderId)
+                    .FirstOrDefaultAsync();
+                string month = DateTime.Now.ToString("MM", DateTimeFormatInfo.InvariantInfo);
+                string year = DateTime.Now.ToString("yy", DateTimeFormatInfo.InvariantInfo);
+                string newOrderNumber;
+                if (lastOrderInDB == null)
+                {
+                    newOrderNumber = "ZAM/0001/" + month + "/" + year;
+                }
+                else
+                {
+                    string[] lastOrderNumberSplit = lastOrderInDB.OrderNumber.Split('/');
+                    int numberInt;
+                    DateTime lastOrderDate = lastOrderInDB.OrderDate;
+                    DateTime todayDate = DateTime.Now;
+                    if (lastOrderDate.Month == todayDate.Month && lastOrderDate.Year == todayDate.Year)
+                    {
+                        numberInt = int.Parse(lastOrderNumberSplit[1]);
+                    } else
+                    {
+                        numberInt = 1;
+                    }
+
+                    string numberString = "" + (numberInt + 1);
+                    while (numberString.Length < 4)
+                    {
+                        numberString = "0" + numberString;
+                    }
+                    newOrderNumber = "ZAM/" + numberString + "/" + month + "/" + year;
+                }
+                orderToAdd.OrderNumber = newOrderNumber;
+                orderToAdd.OrderDate = orders.OrderDate;
+                orderToAdd.UserId = orders.UserId;
+                orderToAdd.CustomerId = orders.CustomerId;
+                orderToAdd.AddressId = orders.AddressId;
+
+                _context.Add(orderToAdd);
+                await _context.SaveChangesAsync();
+
+                List<OrderPositions> newOrderPositions = new List<OrderPositions>();
+                orderPositions.ForEach(op => {
+                    var newPosition = new OrderPositions();
+                    newPosition.OrderId = orderToAdd.OrderId;
+                    newPosition.ProductId = op.ProductId;
+                    newPosition.Count = op.Count;
+                    newPosition.Discount = op.Discount;
+                    newOrderPositions.Add(newPosition);
+                });
+                _context.RemoveRange(orderPositions);
+                await _context.SaveChangesAsync();
+                _context.AddRange(newOrderPositions);
+                await _context.SaveChangesAsync();
+                _context.Remove(orders);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "City", orders.AddressId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerName", orders.CustomerId);
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "InvoiceId", "CustomerAddress", orders.InvoiceId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Firstname", orders.UserId);
-            return View(orders);
+            Orders order;
+            order = await _context.Orders
+                .Include(o => o.OrderPositions)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
+                .FirstOrDefaultAsync(o => o.OrderId == orders.OrderId);
+
+            var customer = await _context.Customers.Include(c => c.Addresses).FirstOrDefaultAsync(c => c.CustomerId == order.CustomerId);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Customer = customer;
+            ViewData["AddressId"] = new SelectList(customer.Addresses, "AddressId", "FullAddress");
+            return View(order);
         }
 
         // GET: Orders/Edit/5
@@ -361,6 +435,9 @@ namespace Sozif.Controllers
                 .Include(o => o.Customer)
                 .Include(o => o.Invoice)
                 .Include(o => o.User)
+                .Include(o => o.OrderPositions)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (orders == null)
             {

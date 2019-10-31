@@ -22,7 +22,7 @@ namespace Sozif.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var sozifContext = _context.Products.Include(p => p.TaxRate);
+            var sozifContext = _context.Products.OrderBy(p => p.ProductName).Include(p => p.TaxRate);
             return View(await sozifContext.ToListAsync());
         }
 
@@ -52,7 +52,7 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate");
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate");
             return View();
         }
 
@@ -76,7 +76,7 @@ namespace Sozif.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
             return View(product);
         }
 
@@ -103,7 +103,7 @@ namespace Sozif.Controllers
             product.BaseNetPrice = ((decimal)products.BaseNetPrice) / 100;
             product.TaxRateId = products.TaxRateId;
 
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
             return View(product);
         }
 
@@ -147,7 +147,7 @@ namespace Sozif.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TaxRateId"] = new SelectList(_context.TaxRates, "TaxRateId", "Rate", product.TaxRateId);
+            ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
             return View(product);
         }
 

@@ -7,20 +7,21 @@
 
 <h1>Tworzenie zamówienia</h1>
 
-<h4></h4>
+<h5 class="error-message">@ViewBag.ErrorMessage</h5>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="OrderNumber" class="form-control" hidden="hidden" value="temp" />
-            <input asp-for="OrderDate" class="form-control" hidden="hidden" value="@DateTime.Now" />
+            <input asp-for="OrderId" class="form-control" hidden="hidden" value="@Model.OrderId" />
+            <input asp-for="OrderNumber" class="form-control" hidden="hidden" value="@Model.OrderNumber" />
+            <input asp-for="OrderDate" class="form-control" hidden="hidden" value="@Model.OrderDate" />
             <input asp-for="RealisationDate" class="form-control" hidden="hidden" />
             <input asp-for="InvoiceId" class="form-control" hidden="hidden" />
-            <input asp-for="UserId" class="form-control" hidden="hidden" value="@Context.Session.GetString("UserId")" />
+            <input asp-for="UserId" class="form-control" hidden="hidden" value="@Model.UserId" />
             <div class="form-group">
                 <label class="control-label">Klient</label>
-                <input asp-for="CustomerId" class="form-control" value="@ViewBag.Customer.CustomerId" hidden="hidden" />
+                <input asp-for="CustomerId" class="form-control" value="@Model.CustomerId" hidden="hidden" />
                 <input class="form-control" value="@ViewBag.Customer.ToString()" disabled="disabled" />
             </div>
             <div class="form-group">
@@ -35,7 +36,7 @@
 </div>
 
 <div>
-    <a asp-action="DeleteOrder" asp-route-id="@Model.OrderId">Wróć do listy zamówień</a>
+    <a asp-action="DeleteOrder" asp-route-id="@Model.OrderId">Usuń i wróć do listy zamówień</a>
 </div>
 
 <hr />

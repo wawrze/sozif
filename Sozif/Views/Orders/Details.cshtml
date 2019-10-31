@@ -134,7 +134,10 @@
                     @((item.Product.BaseNetPrice / 100.0).ToString("0.00")) zł
                 </td>
                 <td>
-                    @(item.Discount)%
+                    @if (item.Discount != null)
+                    {
+                        <text>@(item.Discount)%</text>
+                    }
                 </td>
                 <td>
                     @((item.FinalNetPrice / 100.0).ToString("0.00")) zł

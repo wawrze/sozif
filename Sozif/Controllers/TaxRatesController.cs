@@ -24,7 +24,7 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            return View(await _context.TaxRates.ToListAsync());
+            return View(await _context.TaxRates.OrderBy(tr => tr.Rate).ToListAsync());
         }
 
         // GET: TaxRates/Create
@@ -38,8 +38,6 @@ namespace Sozif.Controllers
         }
 
         // POST: TaxRates/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("TaxRateId,Rate")] TaxRates taxRates)
@@ -78,8 +76,6 @@ namespace Sozif.Controllers
         }
 
         // POST: TaxRates/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TaxRateId,Rate")] TaxRates taxRates)

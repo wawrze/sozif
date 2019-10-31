@@ -27,7 +27,9 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            var sozifContext = _context.Users.Include(u => u.PermLevelNavigation);
+            var sozifContext = _context.Users
+                .OrderBy(u => u.PermLevel)
+                .Include(u => u.PermLevelNavigation);
             return View(await sozifContext.ToListAsync());
         }
 

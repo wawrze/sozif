@@ -20,7 +20,7 @@ namespace Sozif.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Customers.Include(c => c.Addresses).ToListAsync());
+            return View(await _context.Customers.OrderBy(c => c.CustomerName).Include(c => c.Addresses).ToListAsync());
         }
 
         // GET: Customers/Details/5
