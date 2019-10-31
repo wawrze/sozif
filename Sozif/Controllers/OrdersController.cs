@@ -173,14 +173,26 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if (ModelState.IsValid)
+            string errorMessage = "";
+            var orderPositionInDB = await _context.OrderPositions
+                .Include(op => op.Product)
+                .FirstOrDefaultAsync(op => op.OrderId == orderPosition.OrderId && op.ProductId == orderPosition.ProductId);
+            if (orderPositionInDB == null)
             {
-                _context.Add(orderPosition);
-                await _context.SaveChangesAsync();
-                var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
-                return RedirectToAction("Create", new { id = order.CustomerId, orderId = id });
+                if (ModelState.IsValid)
+                {
+                    _context.Add(orderPosition);
+                    await _context.SaveChangesAsync();
+                    var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+                    return RedirectToAction("Create", new { id = order.CustomerId, orderId = id });
+                }
+            }
+            else
+            {
+                errorMessage = "Zamówienie już zawiera pozycję \"" + orderPositionInDB.Product.ProductName + "\"!";
             }
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
+            ViewBag.ErrorMessage = errorMessage;
             return View(orderPosition);
         }
 
@@ -263,6 +275,89 @@ namespace Sozif.Controllers
             return View(orderPosition);
         }
 
+        // GET: Orders/EditOrderPosition/5
+        public async Task<IActionResult> EditOrderPosition(int? id, int? orderId)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null || orderId == null)
+            {
+                return NotFound();
+            }
+
+            var order = await _context.Orders
+                                .Include(o => o.Customer)
+                                .Include(o => o.Address)
+                                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+            var position = await _context.OrderPositions
+                .Include(op => op.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ProductId == id);
+            if (order == null || position == null)
+            {
+                return NotFound();
+            }
+            ViewBag.Customer = order.Customer;
+            ViewBag.Address = order.Address;
+            ViewBag.OrderId = order.OrderId;
+            ViewBag.OrderNumber = order.OrderNumber;
+            ViewBag.OrderDate = order.OrderDate;
+
+            return View(position);
+        }
+
+        // POST: Orders/EditOrderPosition/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditOrderPosition(int id, int? orderId, [Bind("ProductId,OrderId,Count,Discount")] OrderPositions orderPosition)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id != orderPosition.ProductId || orderId != orderPosition.OrderId)
+            {
+                return NotFound();
+            }
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(orderPosition);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OrdersExists(orderPosition.OrderId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Edit", new { id = orderId });
+            }
+            ViewBag.Customer = order.Customer;
+            ViewBag.Address = order.Address;
+            ViewBag.OrderId = order.OrderId;
+            ViewBag.OrderNumber = order.OrderNumber;
+            ViewBag.OrderDate = order.OrderDate;
+
+            return View(orderPosition);
+        }
+
         // POST: Orders/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -311,7 +406,7 @@ namespace Sozif.Controllers
                     newOrderNumber = "ZAM/" + numberString + "/" + month + "/" + year;
                 }
                 orderToAdd.OrderNumber = newOrderNumber;
-                orderToAdd.OrderDate = orders.OrderDate;
+                orderToAdd.OrderDate = DateTime.Now;
                 orderToAdd.UserId = orders.UserId;
                 orderToAdd.CustomerId = orders.CustomerId;
                 orderToAdd.AddressId = orders.AddressId;
@@ -400,6 +495,29 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
+            int orderPositionsCount = await _context.OrderPositions.Where(op => op.OrderId == id).CountAsync();
+            if (orderPositionsCount == 0)
+            {
+                ViewBag.ErrorMessage = "Nie możesz zapisać zamówienia bez pozycji!";
+                var orderWithNoPositions = await _context.Orders
+                    .Include(o => o.Address)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Invoice)
+                    .Include(o => o.User)
+                    .Include(o => o.OrderPositions)
+                        .ThenInclude(op => op.Product)
+                            .ThenInclude(p => p.TaxRate)
+                    .FirstOrDefaultAsync(m => m.OrderId == id);
+                if (orderWithNoPositions == null)
+                {
+                    return NotFound();
+                }
+                var addresses = _context.Addresses.Where(a => a.CustomerId == orderWithNoPositions.CustomerId);
+                ViewData["AddressId"] = new SelectList(addresses, "AddressId", "FullAddress", orderWithNoPositions.AddressId);
+
+                return View(orderWithNoPositions);
+            }
+
             var order = await _context.Orders
                 .Include(o => o.Address)
                 .Include(o => o.Customer)
@@ -464,14 +582,33 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if (ModelState.IsValid)
+            string errorMessage = "";
+            var orderPositionInDB = await _context.OrderPositions
+                .Include(op => op.Product)
+                .FirstOrDefaultAsync(op => op.OrderId == orderPosition.OrderId && op.ProductId == orderPosition.ProductId);
+            if (orderPositionInDB == null)
             {
-                _context.Add(orderPosition);
-                await _context.SaveChangesAsync();
-                var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
-                return RedirectToAction("Edit", new { id = id });
+                if (ModelState.IsValid)
+                {
+                    _context.Add(orderPosition);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Edit", new { id = id });
+                }
+            } else
+            {
+                errorMessage = "Zamówienie już zawiera pozycję \"" + orderPositionInDB.Product.ProductName + "\"!";
             }
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            ViewBag.Customer = order.Customer;
+            ViewBag.Address = order.Address;
+            ViewBag.OrderId = order.OrderId;
+
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
+            ViewBag.ErrorMessage = errorMessage;
             return View(orderPosition);
         }
 
