@@ -1,46 +1,61 @@
 ﻿@model Sozif.Customers
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Dodawanie nowego klienta";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+    <h1>Dodawanie nowego klienta</h1>
 
-<h4>Customers</h4>
+<h5 class="error-message">@ViewBag.ErrorMessage</h5>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="CustomerName" class="control-label"></label>
+                <label class="control-label">Nazwa klienta</label>
                 <input asp-for="CustomerName" class="form-control" />
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Nip" class="control-label"></label>
-                <input asp-for="Nip" class="form-control" />
-                <span asp-validation-for="Nip" class="text-danger"></span>
+                <label class="control-label">NIP</label>
+                <input asp-for="NipString" pattern="[0-9-]{10,13}" class="form-control" />
+                <span asp-validation-for="NipString" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ContactPerson" class="control-label"></label>
+                <label class="control-label">Osoba do kontaktu</label>
                 <input asp-for="ContactPerson" class="form-control" />
                 <span asp-validation-for="ContactPerson" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                <label class="control-label">Numer telefonu</label>
+                <input asp-for="PhoneNumberString" pattern="[0-9-]{9,13}" class="form-control" />
+                <span asp-validation-for="PhoneNumberString" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label class="control-label">Adres</label>
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Kod pocztowy</label>
+                <input asp-for="PostalCode" pattern="[0-9-]{6,6}" class="form-control" />
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Miasto</label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Dodaj klienta" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Wróć do listy klientów</a>
 </div>
 

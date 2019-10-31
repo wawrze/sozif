@@ -55,16 +55,55 @@ namespace Sozif.Controllers
         // POST: Customers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,CustomerName,Nip,ContactPerson,PhoneNumber")] Customers customers)
+        public async Task<IActionResult> Create([Bind("CustomerId,CustomerName,NipString,ContactPerson,PhoneNumberString,Street,PostalCode,City")] Customers customers)
         {
             if (HttpContext.Session.GetString("EditCustomers") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (customers.CustomerName == null || customers.NipString == "" || customers.Street == null || customers.PostalCode == null || customers.City == null)
+            {
+                ViewBag.ErrorMessage = "Musisz uzupełnić wszystkie dane!";
+                return View(customers);
+            }
+
+            string[] postalCodeSplit = customers.PostalCode.Split("-");
+            if (postalCodeSplit.Length != 2 || postalCodeSplit[0].Length != 2 || postalCodeSplit[1].Length != 3)
+            {
+                ViewBag.ErrorMessage = "Niepoprawny format kodu pocztowego!";
+                return View(customers);
+            }
+            if (customers.Nip < 1000000000)
+            {
+                ViewBag.ErrorMessage = "Niepoprawny numer NIP!";
+                return View(customers);
+            }
+            int customersWithSameNip = await _context.Customers.Where(c => c.Nip == customers.Nip).CountAsync();
+            if (customersWithSameNip > 0)
+            {
+                ViewBag.ErrorMessage = "Istnieje już klient o takim numerze NIP!";
+                return View(customers);
+            }
+            if (customers.PhoneNumber < 100000000)
+            {
+                ViewBag.ErrorMessage = "Niepoprawny numer telefonu!";
+                return View(customers);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(customers);
                 await _context.SaveChangesAsync();
+
+                Addresses mainAddress = new Addresses();
+                mainAddress.CustomerId = customers.CustomerId;
+                mainAddress.Street = customers.Street;
+                mainAddress.PostalCode = customers.PostalCode;
+                mainAddress.City = customers.City;
+                mainAddress.IsMainAddress = true;
+                _context.Add(mainAddress);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(customers);
@@ -146,7 +185,15 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
-            if (ModelState.IsValid)
+            if (customers.Nip < 1000000000)
+            {
+                ViewBag.ErrorMessage = "Niepoprawny numer NIP!";
+            }
+            if (customers.PhoneNumber < 100000000)
+            {
+                ViewBag.ErrorMessage = "Niepoprawny numer telefonu!";
+            }
+            if (ModelState.IsValid && ViewBag.ErrorMessage == null)
             {
                 try
                 {
@@ -272,6 +319,9 @@ namespace Sozif.Controllers
                 return RedirectToAction("Index", "Home");
             }
             var customers = await _context.Customers.FindAsync(id);
+            var addresses = await _context.Addresses.Where(a => a.CustomerId == customers.CustomerId).ToListAsync();
+            _context.Addresses.RemoveRange(addresses);
+            await _context.SaveChangesAsync();
             _context.Customers.Remove(customers);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

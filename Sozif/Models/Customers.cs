@@ -39,6 +39,7 @@ namespace Sozif
 
             set
             {
+                if (value == null) return;
                 string justNumber = "";
                 foreach (char c in value)
                 {
@@ -53,6 +54,7 @@ namespace Sozif
         {
             get
             {
+                if (Nip == 0) return "";
                 string fourthPart = ((int)(Nip % 100)).ToString();
                 if (fourthPart.Length == 1) fourthPart = "0" + fourthPart;
                 string thirdPart = (((int)(Nip / 100)) % 100).ToString();
@@ -76,6 +78,15 @@ namespace Sozif
                 Nip = Decimal.Parse(justNumber);
             }
         }
+
+        [NotMapped]
+        public string Street { get; set; }
+        
+        [NotMapped]
+        public string PostalCode { get; set; }
+
+        [NotMapped]
+        public string City { get; set; }
 
         public override string ToString()
         {
