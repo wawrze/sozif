@@ -43,13 +43,13 @@
 </div>
 
 <div>
-    <a asp-action="Index">Wróć do listy zamówień</a>
+    <a asp-action="Details" asp-route-id="@Model.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do szczegółów zamówienia" /></a>
 </div>
 
 <hr />
 <h4>Pozycje zamówienia</h4>
 <p>
-    <a asp-action="CreateOrderPosition" asp-route-id="@Model.OrderId">Dodaj pozycję</a>
+    <a asp-action="CreateOrderPosition" asp-route-id="@Model.OrderId"><input class="btn btn-primary" type="button" value="Dodaj pozycję" /></a>
 </p>
 <table class="table">
     <thead>
@@ -115,8 +115,8 @@
                     @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
                 </td>
                 <td>
-                    <a asp-action="EditOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"> Edytuj</a> |
-                    <a asp-action="DeleteOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"> Usuń</a>
+                    <a asp-action="EditOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a> 
+                    <a asp-action="DeleteOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
                 </td>
             </tr>
         }

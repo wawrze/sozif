@@ -212,7 +212,7 @@ namespace Sozif.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = id });
             }
 
             return View(await _context.Customers.Include(c => c.Addresses).FirstOrDefaultAsync(m => m.CustomerId == id));

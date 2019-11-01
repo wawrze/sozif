@@ -10,7 +10,7 @@
 <p>
     @if (Context.Session.GetString("EditInvoices") == "true")
     {
-        <a asp-action="ChooseCustomer">Wystaw nową fakturę</a>
+        <a asp-action="ChooseCustomer"><input class="btn btn-primary" type="button" value="Wystaw nową fakturę" /></a>
     }
 </p>
 <table class="table">

@@ -8,7 +8,7 @@
 <h1>Lista użytkowników</h1>
 
 <p>
-    <a asp-action="Create">Dodaj użytkownika</a>
+    <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj użytkownika" /></a>
 </p>
 <table class="table">
     <thead>
@@ -47,8 +47,8 @@
                     @item.PermLevelNavigation.PermName (@item.PermLevelNavigation.PermLevel)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.UserId">Edytuj</a> |
-                    <a asp-action="Delete" asp-route-id="@item.UserId">Usuń</a>
+                    <a asp-action="Edit" asp-route-id="@item.UserId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+                    <a asp-action="Delete" asp-route-id="@item.UserId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
                 </td>
             </tr>
         }

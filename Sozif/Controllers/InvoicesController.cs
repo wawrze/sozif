@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Sozif.Attributes;
+using Sozif.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Sozif;
-using Sozif.Attributes;
-using Sozif.Models;
 
 namespace Sozif.Controllers
 {
@@ -128,7 +126,7 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
-            
+
             var ordersToInvoiceIds = new List<int>();
             invoice.Orders.ForEach(o => { if (o.Value) ordersToInvoiceIds.Add(o.Key); });
             if (ordersToInvoiceIds.Count == 0)

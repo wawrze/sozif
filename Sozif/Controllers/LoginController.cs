@@ -69,7 +69,7 @@ namespace Sozif.Controllers
         public IActionResult PasswordChange(int? id)
         {
             string userIdString = HttpContext.Session.GetString("UserId");
-            if(userIdString == null)
+            if (userIdString == null)
             {
                 return NotFound();
             }

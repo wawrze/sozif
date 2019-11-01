@@ -58,8 +58,8 @@
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="OrderId" />
-        <input type="submit" value="Usuń" class="btn btn-danger" /> |
-        <a asp-action="Index">Wróć do listy zamówień</a>
+        <input type="submit" value="Usuń" class="btn btn-danger" />
+        <a asp-action="Details" asp-route-id="@Model.OrderId" ><input class="btn btn-secondary" type="button" value="Wróć do szczegółów zamówienia" /></a>
     </form>
 </div>
 <hr />

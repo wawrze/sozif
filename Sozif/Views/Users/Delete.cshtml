@@ -47,7 +47,7 @@
                 <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
             </div>
         }
-        <input type="submit" value="Usuń" class="btn btn-danger" /> |
-        <a asp-action="Index" asp-route-id="@Model.UserId">Wróć do listy użytkowników</a>
+        <input type="submit" value="Usuń" class="btn btn-danger" /> 
+        <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy użytkowników" /></a>
     </form>
 </div>

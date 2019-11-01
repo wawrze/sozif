@@ -82,10 +82,10 @@
 <div>
     @if (Model.RealisationDate == null && Context.Session.GetString("EditOrders") == "true")
     {
-        <a asp-action="Edit" asp-route-id="@Model.OrderId">Edytuj</a><text> |</text>
-        <a asp-action="Delete" asp-route-id="@Model.OrderId">Usuń</a><text> |</text>
+        <a asp-action="Edit" asp-route-id="@Model.OrderId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+        <a asp-action="Delete" asp-route-id="@Model.OrderId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
     }
-    <a asp-action="Index">Wróć do listy zamówień</a>
+    <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy zamówień" /></a>
 </div>
 <hr />
 <h4>Pozycje zamówienia</h4>

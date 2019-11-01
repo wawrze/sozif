@@ -28,8 +28,8 @@
         <input type="hidden" asp-for="TaxRateId" />
         @if (ViewBag.ErrorMessage == null)
         {
-            <input type="submit" value="Usuń" class="btn btn-danger" /><text> |</text>
+            <input type="submit" value="Usuń" class="btn btn-danger" /><text> </text>
         }
-        <a asp-action="Index">Wróć do listy stawek VAT</a>
+        <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy stawek VAT" /></a>
     </form>
 </div>

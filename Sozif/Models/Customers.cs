@@ -81,7 +81,7 @@ namespace Sozif
 
         [NotMapped]
         public string Street { get; set; }
-        
+
         [NotMapped]
         public string PostalCode { get; set; }
 

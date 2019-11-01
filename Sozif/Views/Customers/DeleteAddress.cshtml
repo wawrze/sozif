@@ -56,8 +56,8 @@ else
         <input type="hidden" asp-for="AddressId" />
         @if (!Model.IsMainAddress)
         {
-            <input type="submit" value="Usuń" class="btn btn-danger" /><text> |</text>
+            <input type="submit" value="Usuń" class="btn btn-danger" /><text> </text>
         }
-        <a asp-action="Edit" asp-route-id="@Model.CustomerId">Wróć do edycji klienta</a>
+        <a asp-action="Edit" asp-route-id="@Model.CustomerId"><input class="btn btn-secondary" type="button" value="Wróć do edycji klienta" /></a>
     </form>
 </div>

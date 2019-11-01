@@ -10,7 +10,7 @@
 <p>
     @if (Context.Session.GetString("EditOrders") == "true")
     {
-        <a asp-action="ChooseCustomer">Stwórz nowe zamówienie</a>
+        <a asp-action="ChooseCustomer" ><input class="btn btn-primary" type="button" value="Stwórz nowe zamówienie" /></a>
     }
 </p>
 <table class="table">

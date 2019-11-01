@@ -40,10 +40,10 @@
 <div>
     @if (Context.Session.GetString("EditCustomers") == "true")
     {
-        <a asp-action="Edit" asp-route-id="@Model.CustomerId">Edytuj</a><text> |</text>
-        <a asp-action="Delete" asp-route-id="@Model.CustomerId"> Usuń</a><text> |</text>
+        <a asp-action="Edit" asp-route-id="@Model.CustomerId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+        <a asp-action="Delete" asp-route-id="@Model.CustomerId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
     }
-    <a asp-action="Index">Wróć do listy klientów</a>
+    <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy klientów" /></a>
 </div>
 <hr />
 <h4>Adresy klienta</h4>

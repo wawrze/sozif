@@ -17,11 +17,12 @@ namespace Sozif
         public string Lastname { get; set; }
         public int PermLevel { get; set; }
 
-        public string UserData { 
+        public string UserData
+        {
             get
             {
                 return Username + "(" + Firstname + " " + Lastname + ")";
-            } 
+            }
         }
 
         public virtual UserPermissions PermLevelNavigation { get; set; }

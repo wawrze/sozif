@@ -8,7 +8,7 @@
     <h1>Lista stawek VAT</h1>
 
 <p>
-    <a asp-action="Create">Dodaj nową stawkę</a>
+    <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj nową stawkę" /></a>
 </p>
 <table class="table">
     <thead>
@@ -29,8 +29,8 @@
                     @Html.DisplayFor(modelItem => item.Rate)%
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.TaxRateId">Edytuj</a> |
-                    <a asp-action="Delete" asp-route-id="@item.TaxRateId">Usuń</a>
+                    <a asp-action="Edit" asp-route-id="@item.TaxRateId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+                    <a asp-action="Delete" asp-route-id="@item.TaxRateId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
                 </td>
             </tr>
         }

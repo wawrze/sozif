@@ -7,13 +7,15 @@
 
 <h1>Edycja pozycji nowego zamówienia</h1>
 
-<div class="form-group">
-    <label class="control-label">Klient</label>
-    <input class="form-control" value="@ViewBag.Customer.ToString()" disabled="disabled" />
-</div>
-<div class="form-group">
-    <label class="control-label">Adres realizacji</label>
-    <input class="form-control" value="@ViewBag.Address.FullAddress" disabled="disabled" />
+<div class="col-md-4">
+    <div class="form-group">
+        <label class="control-label">Klient</label>
+        <input class="form-control" value="@ViewBag.Customer.ToString()" disabled="disabled" />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Adres realizacji</label>
+        <input class="form-control" value="@ViewBag.Address.FullAddress" disabled="disabled" />
+    </div>
 </div>
 
 <h4>Edycja pozycji</h4>
@@ -47,6 +49,6 @@
 </div>
 
 <div>
-    <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId">Wróć do zamówienia</a>
+    <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
 </div>
 

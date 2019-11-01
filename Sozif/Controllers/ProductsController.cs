@@ -130,14 +130,6 @@ namespace Sozif.Controllers
                 return NotFound();
             }
 
-            int productsWithSameName = await _context.Products.Where(p => p.ProductName == product.ProductName).CountAsync();
-            if (productsWithSameName > 0)
-            {
-                ViewBag.ErrorMessage = "Istnieje już produkt o takiej nazwie!";
-                ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
-                return View(product);
-            }
-
             var productToInsert = new Products();
             productToInsert.ProductId = product.ProductId;
             productToInsert.ProductName = product.ProductName;

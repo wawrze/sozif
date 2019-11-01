@@ -18,7 +18,7 @@
                 </button>
                 @if (Context.Session.GetString("AUTH") != null)
                 {
-                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse col-sm-9">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Zamówienia</a>
@@ -41,16 +41,19 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Użytkownicy</a>
                                 </li>
                             }
+                        </ul>
+                    </div>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse col-sm-2">
+                        <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="PasswordChange">Zmień hasło</a>
+                                <a class="nav-link text-dark" asp-controller="Login" asp-action="PasswordChange">Zmień hasło</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LogOut">Wyloguj</a>
+                                <a asp-controller="Login" asp-action="LogOut"><input class="btn btn-outline-primary" type="button" value="Wyloguj" /></a>
                             </li>
                         </ul>
                     </div>
                 }
-
             </div>
         </nav>
     </header>

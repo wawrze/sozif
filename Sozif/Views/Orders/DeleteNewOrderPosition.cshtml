@@ -49,7 +49,7 @@
     <form asp-action="DeleteNewOrderPosition">
         <input type="hidden" asp-for="OrderId" />
         <input type="hidden" asp-for="ProductId" />
-        <input type="submit" value="Usuń" class="btn btn-danger" /> |
-        <a asp-action="Edit" asp-route-id="@ViewBag.OrderId">Wróć do edycji zamówienia</a>
+        <input type="submit" value="Usuń" class="btn btn-danger" />
+        <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
     </form>
 </div>
