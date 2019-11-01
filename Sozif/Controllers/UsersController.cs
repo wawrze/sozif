@@ -54,6 +54,13 @@ namespace Sozif.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (users.Username == null || users.Firstname == null || users.Lastname == null || users.Password == null)
+            {
+                ViewBag.ErrorMessage = "Musisz wypełnić wszystkie pola!";
+                ViewData["PermLevel"] = new SelectList(_context.UserPermissions, "PermLevel", "PermName", users.PermLevel);
+                return View(users);
+            }
+
             int usersWithSameUsername = await _context.Users.Where(u => u.Username == users.Username).CountAsync();
             if (usersWithSameUsername > 0)
             {

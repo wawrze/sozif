@@ -79,7 +79,7 @@ namespace Sozif.Controllers
             }
 
             var ordersToChooseFrom = await _context.Orders
-                .Where(o => !o.OrderNumber.Contains("R"))
+                .Where(o => !o.OrderNumber.Contains("R") && o.RealisationDate != null)
                 .Include(o => o.Address)
                 .Include(o => o.User)
                 .Include(o => o.OrderPositions)
@@ -204,6 +204,9 @@ namespace Sozif.Controllers
                     }
                 });
                 _context.AddRange(newInvoicePositions);
+                await _context.SaveChangesAsync();
+                ordersToInvoice.ForEach(o => o.InvoiceId = newInvoice.InvoiceId);
+                _context.UpdateRange(ordersToInvoice);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

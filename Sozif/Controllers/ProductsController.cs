@@ -65,6 +65,12 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (product.ProductName == null)
+            {
+                ViewBag.ErrorMessage = "Nazwa produktu nie może być pusta!";
+                ViewData["TaxRateId"] = new SelectList(_context.TaxRates.OrderBy(tr => tr.Rate), "TaxRateId", "Rate", product.TaxRateId);
+                return View(product);
+            }
 
             int productsWithSameName = await _context.Products.Where(p => p.ProductName == product.ProductName).CountAsync();
             if (productsWithSameName > 0)

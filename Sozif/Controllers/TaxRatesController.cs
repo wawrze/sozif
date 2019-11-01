@@ -47,6 +47,12 @@ namespace Sozif.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (taxRates.Rate == null)
+            {
+                ViewBag.ErrorMessage = "Musisz podać stawkę!";
+                return View(taxRates);
+            }
+
             int taxRatesWithSameRate = await _context.TaxRates.Where(t => t.Rate == taxRates.Rate).CountAsync();
             if (taxRatesWithSameRate > 0)
             {

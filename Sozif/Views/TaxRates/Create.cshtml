@@ -15,7 +15,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Stawka</label>
-                <input asp-for="Rate" class="form-control" />
+                <input asp-for="Rate" type="number" pattern="[0-9]{1,2}"  class="form-control" />
                 <span asp-validation-for="Rate" class="text-danger"></span>
             </div>
             <div class="form-group">

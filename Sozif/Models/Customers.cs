@@ -70,6 +70,7 @@ namespace Sozif
 
             set
             {
+                if (value == null) return;
                 string justNumber = "";
                 foreach (char c in value)
                 {

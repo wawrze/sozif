@@ -62,6 +62,32 @@ namespace Sozif.Controllers
             return View(orders);
         }
 
+        // GET: Orders/Completed/5
+        public async Task<IActionResult> Completed(int? id)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var orders = await _context.Orders.FirstOrDefaultAsync(m => m.OrderId == id);
+
+            if (orders == null)
+            {
+                return NotFound();
+            }
+
+            orders.RealisationDate = DateTime.Now;
+            _context.Update(orders);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = id });
+        }
+
         // GET: Orders/ChooseCustomer
         public async Task<IActionResult> ChooseCustomer()
         {
@@ -335,6 +361,12 @@ namespace Sozif.Controllers
                                 .Include(o => o.Customer)
                                 .Include(o => o.Address)
                                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = orderId });
+            }
+
             var position = await _context.OrderPositions
                 .Include(op => op.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ProductId == id);
@@ -372,6 +404,11 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            if (order.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = orderId });
+            }
+
             string errorMessage = "";
             if (orderPosition.Discount < 0)
             {
@@ -542,6 +579,11 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            if (orders.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = id });
+            }
+
             var addresses = _context.Addresses.Where(a => a.CustomerId == orders.CustomerId);
             ViewData["AddressId"] = new SelectList(addresses, "AddressId", "FullAddress", orders.AddressId);
 
@@ -594,6 +636,11 @@ namespace Sozif.Controllers
                     .ThenInclude(op => op.Product)
                     .ThenInclude(p => p.TaxRate)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
+
+            if (order.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = id });
+            }
 
             order.AddressId = orders.AddressId;
 
@@ -769,6 +816,10 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            if (order.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = orderId });
+            }
             var orderPosition = order.OrderPositions.FirstOrDefault(op => op.ProductId == id);
             if (orderPosition == null)
             {
@@ -824,6 +875,10 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            if (orders.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = id });
+            }
 
             return View(orders);
         }
@@ -838,6 +893,10 @@ namespace Sozif.Controllers
                 return RedirectToAction("Index", "Home");
             }
             var orders = await _context.Orders.Include(o => o.OrderPositions).FirstOrDefaultAsync(o => o.OrderId == id);
+            if (orders.RealisationDate != null)
+            {
+                return RedirectToAction("Details", new { id = id });
+            }
             _context.OrderPositions.RemoveRange(orders.OrderPositions);
             await _context.SaveChangesAsync();
             _context.Orders.Remove(orders);
