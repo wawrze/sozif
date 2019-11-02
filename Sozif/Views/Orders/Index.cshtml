@@ -4,99 +4,124 @@
     ViewData["Title"] = "Lista zamówień";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@section css {
-    <link rel="stylesheet" href="@Url.Content("~/js/tablesorter/themes/blue/style.css")" />
-}
 
 <h1>Lista zamówień</h1>
 
-<p>
-    @if (Context.Session.GetString("EditOrders") == "true")
-    {
-        <a asp-action="ChooseCustomer"><input class="btn btn-primary" type="button" value="Stwórz nowe zamówienie" /></a>
-    }
-</p>
-<table id="OrdersList" class="table table-bordered tablesorter">
-    <thead>
-        <tr>
-            <th class="{sorter: 'text'}">
-                Numer zamówienia
-            </th>
-            <th class="{sorter: 'textPL'}">
-                Klient
-            </th>
-            <th>
-                Data zamówienia
-            </th>
-            <th class="{sorter: 'textPL'}">
-                Adres realizacji
-            </th>
-            <th>
-                Ilość pozycji
-            </th>
-            <th class="{sorter: 'cur'}">
-                Wartość netto
-            </th>
-            <th class="{sorter: 'cur'}">
-                Wartość VAT
-            </th>
-            <th class="{sorter: 'cur'}">
-                Wartość brutto
-            </th>
-            <th>
-                Data realizacji
-            </th>
-            <th>
-                Numer faktury
-            </th>
-            <th class="{sorter: 'textPL'}">
-                Osoba przyjmująca
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @{ bool row = true; }
-        @foreach (var item in Model)
-        {
-            row = !row;
-            <tr onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'" class=@(row ? "d0" : "d1")>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderNumber)
-                </td>
-                <td>
-                    @(item.Customer.ToString())
-                </td>
-                <td>
-                    @(item.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
-                </td>
-                <td>
-                    @(item.Address.FullAddress)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PositionsCount)
-                </td>
-                <td>
-                    @((item.NetValue / 100.0).ToString("0.00")) zł
-                </td>
-                <td>
-                    @((item.TaxValue / 100.0).ToString("0.00")) zł
-                </td>
-                <td>
-                    @((item.GrossValue / 100.0).ToString("0.00")) zł
-                </td>
-                <td>
-                    @(item.RealisationDate?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            @if (Context.Session.GetString("EditOrders") == "true")
+            {
+                <a asp-action="ChooseCustomer"><input class="btn btn-primary" type="button" value="Stwórz nowe zamówienie" /></a>
+            }
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p align="right">
+            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-danger" form="filters" /> 
+            <input type="submit" id="applyFiltersButton" value="Zastosuj filtry" class="btn btn-primary" form="filters" />
+        </p>
+    </div>
+</div>
+
+<form asp-action="Index" id="filters" method="get">
+    <table id="OrdersList" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th class="{sorter: 'text'}">
+                    Numer zamówienia
+                </th>
+                <th class="{sorter: 'textPL'}">
+                    Klient
+                </th>
+                <th>
+                    Data zamówienia
+                </th>
+                <th class="{sorter: 'textPL'}">
+                    Adres realizacji
+                </th>
+                <th>
+                    Ilość pozycji
+                </th>
+                <th class="{sorter: 'cur'}">
+                    Wartość netto
+                </th>
+                <th class="{sorter: 'cur'}">
+                    Wartość VAT
+                </th>
+                <th class="{sorter: 'cur'}">
+                    Wartość brutto
+                </th>
+                <th>
+                    Data realizacji
+                </th>
+                <th>
+                    Numer faktury
+                </th>
+                <th class="{sorter: 'textPL'}">
+                    Osoba przyjmująca
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody class="tablesorter-no-sort">
+            <tr>
+                <td style="background-color: #99bfe6"/><input type="text" id="orderFilter" name="order" value="@ViewBag.CurrentOrder"></td>
+                <td style="background-color: #99bfe6"><input type="text" id="customerFilter" name="customer" value="@ViewBag.CurrentCustomer"></td>
+                <td style="background-color: #99bfe6"></td>
+                <td style="background-color: #99bfe6"><input type="text" id="addressFilter" name="address" value="@ViewBag.CurrentAddress"></td>
+                <td style="background-color: #99bfe6"></td>
+                <td style="background-color: #99bfe6"></td>
+                <td style="background-color: #99bfe6"></td>
+                <td style="background-color: #99bfe6"></td>
+                <td style="background-color: #99bfe6"></td>
+                <td style="background-color: #99bfe6"><input type="text" id="invoiceFilter" name="invoice" value="@ViewBag.CurrentInvoice"></td>
+                <td style="background-color: #99bfe6"><input type="text" id="userFilter" name="user" value="@ViewBag.CurrentUser"></td>
+            </tr>
+        </tbody>
+        <tbody>
+            @{ bool row = true; }
+            @foreach (var item in Model)
+            {
+                row = !row;
+                <tr onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'" class=@(row ? "d0" : "d1")>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OrderNumber)
+                    </td>
+                    <td>
+                        @(item.Customer.ToString())
+                    </td>
+                    <td>
+                        @(item.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                    </td>
+                    <td>
+                        @(item.Address.FullAddress)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PositionsCount)
+                    </td>
+                    <td>
+                        @((item.NetValue / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @((item.TaxValue / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @((item.GrossValue / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @(item.RealisationDate?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
 
 @section scripts {
     <script type="text/javascript">
@@ -123,13 +148,20 @@
             });
 
             $("#OrdersList").tablesorter({
-                widgets: ["zebra"], // initialize zebra striping of the table
-                widgetOptions: {
-                    zebra: [ "normal-row", "alt-row" ]
-                }
+                theme: 'blue',
+                widgets: ['zebra']
             });
         });
     </script>
-    <script src="@Url.Content("~/js/tablesorter/jquery.metadata.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/js/tablesorter/jquery.tablesorter.min.js")" type="text/javascript"></script>
 }
+
+<script type="text/javascript">
+    function clearFilters() {
+        document.getElementById("orderFilter").value = "";
+        document.getElementById("customerFilter").value = "";
+        document.getElementById("addressFilter").value = "";
+        document.getElementById("invoiceFilter").value = "";
+        document.getElementById("userFilter").value = "";
+        document.getElementById("applyFiltersButton").click();
+    }
+</script>

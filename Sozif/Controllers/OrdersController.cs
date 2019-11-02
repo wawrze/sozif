@@ -22,19 +22,55 @@ namespace Sozif.Controllers
         }
 
         // GET: Orders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? order, string? customer, string? address, string? invoice, string? user)
         {
-            var sozifContext = _context.Orders
+            var orders = await _context.Orders
                 .Where(o => !o.OrderNumber.Contains("R"))
-                .OrderByDescending(o => o.OrderId)
                 .Include(o => o.Address)
                 .Include(o => o.Customer)
                 .Include(o => o.Invoice)
                 .Include(o => o.User)
                 .Include(o => o.OrderPositions)
                     .ThenInclude(op => op.Product)
-                        .ThenInclude(p => p.TaxRate);
-            return View(await sozifContext.ToListAsync());
+                        .ThenInclude(p => p.TaxRate)
+                .OrderByDescending(o => o.OrderId)
+                .ToListAsync();
+
+            var ordersToShow = new List<Orders>();
+            orders.ForEach(o =>
+            {
+                bool show = true;
+                if (order != null && order != "" && !o.OrderNumber.ToLower().Contains(order.ToLower()))
+                {
+                    show = false;
+                }
+                if (customer != null && customer != "" && !o.Customer.ToString().ToLower().Contains(customer.ToLower())) {
+                    show = false;
+                }
+                if (address != null && address != "" && !o.Address.FullAddress.ToLower().Contains(address.ToLower()))
+                {
+                    show = false;
+                }
+                if (invoice != null && invoice != "" && (o.InvoiceId == null || !o.Invoice.InvoiceNumber.ToLower().Contains(invoice.ToLower())))
+                {
+                    show = false;
+                }
+                if (user != null && user != "" && !o.UserName.ToLower().Contains(user.ToLower()))
+                {
+                    show = false;
+                }
+                if (show)
+                {
+                    ordersToShow.Add(o);
+                }
+            });
+
+            ViewBag.CurrentOrder = order;
+            ViewBag.CurrentCustomer = customer;
+            ViewBag.CurrentAddress = address;
+            ViewBag.CurrentInvoice = invoice;
+            ViewBag.CurrentUser = user;
+            return View(ordersToShow);
         }
 
         // GET: Orders/Details/5
