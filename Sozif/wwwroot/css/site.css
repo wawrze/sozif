@@ -82,3 +82,18 @@ body {
 .success-message {
     color: blue;
 }
+
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+input {
+    padding: 0.2em;
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+td {
+    text-align : center;
+}

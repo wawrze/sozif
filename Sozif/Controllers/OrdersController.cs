@@ -62,7 +62,8 @@ namespace Sozif.Controllers
                 {
                     show = false;
                 }
-                if (customer != null && customer != "" && !o.Customer.ToString().ToLower().Contains(customer.ToLower())) {
+                if (customer != null && customer != "" && !o.Customer.ToString().ToLower().Contains(customer.ToLower()))
+                {
                     show = false;
                 }
                 if (orderFrom != null && o.OrderDate < orderFrom)
