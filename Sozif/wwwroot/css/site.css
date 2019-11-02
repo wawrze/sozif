@@ -39,18 +39,6 @@ table {
     font-size: 10px;
 }
 
-tr.d0 td {
-    background-color: #e6f7ff;
-}
-
-tr.d1 td {
-    background-color: #ccefff;
-}
-
-tr:hover td {
-    background-color: #ffffff;
-}
-
 .border-top {
   border-top: 1px solid #e5e5e5;
 }
