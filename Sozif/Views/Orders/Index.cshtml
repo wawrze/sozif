@@ -4,40 +4,43 @@
     ViewData["Title"] = "Lista zamówień";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@section css {
+    <link rel="stylesheet" href="@Url.Content("~/js/tablesorter/themes/blue/style.css")" />
+}
 
 <h1>Lista zamówień</h1>
 
 <p>
     @if (Context.Session.GetString("EditOrders") == "true")
     {
-        <a asp-action="ChooseCustomer" ><input class="btn btn-primary" type="button" value="Stwórz nowe zamówienie" /></a>
+        <a asp-action="ChooseCustomer"><input class="btn btn-primary" type="button" value="Stwórz nowe zamówienie" /></a>
     }
 </p>
-<table class="table">
+<table id="OrdersList" class="table table-bordered tablesorter">
     <thead>
         <tr>
-            <th>
+            <th class="{sorter: 'text'}">
                 Numer zamówienia
             </th>
-            <th>
+            <th class="{sorter: 'textPL'}">
                 Klient
             </th>
             <th>
                 Data zamówienia
             </th>
-            <th>
+            <th class="{sorter: 'textPL'}">
                 Adres realizacji
             </th>
             <th>
                 Ilość pozycji
             </th>
-            <th>
+            <th class="{sorter: 'cur'}">
                 Wartość netto
             </th>
-            <th>
+            <th class="{sorter: 'cur'}">
                 Wartość VAT
             </th>
-            <th>
+            <th class="{sorter: 'cur'}">
                 Wartość brutto
             </th>
             <th>
@@ -46,7 +49,7 @@
             <th>
                 Numer faktury
             </th>
-            <th>
+            <th class="{sorter: 'textPL'}">
                 Osoba przyjmująca
             </th>
         </tr>
@@ -94,3 +97,39 @@
         }
     </tbody>
 </table>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'cur',
+                is: function (s) {
+                    return false;
+                },
+                format: function (s) {
+                    return s.replace(' zł', '').replace(',', '');
+                },
+                type: 'number'
+            });
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s) {
+                    return false;
+                },
+                format: function (s) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+
+            $("#OrdersList").tablesorter({
+                widgets: ["zebra"], // initialize zebra striping of the table
+                widgetOptions: {
+                    zebra: [ "normal-row", "alt-row" ]
+                }
+            });
+        });
+    </script>
+    <script src="@Url.Content("~/js/tablesorter/jquery.metadata.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/tablesorter/jquery.tablesorter.min.js")" type="text/javascript"></script>
+}
