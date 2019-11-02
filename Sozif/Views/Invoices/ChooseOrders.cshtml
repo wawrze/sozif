@@ -77,13 +77,13 @@
                 <td hidden="hidden"><input asp-for="@Model.Orders[i].Key" value="@ViewBag.Orders[i].OrderId" /></td>
                 <td><input asp-for="@Model.Orders[i].Value" /></td>
                 <td>@ViewBag.Orders[i].OrderNumber</td>
-                <td>@ViewBag.Orders[i].OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@ViewBag.Orders[i].OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)</td>
                 <td>@ViewBag.Orders[i].Address.FullAddress</td>
                 <td>@ViewBag.Orders[i].PositionsCount</td>
                 <td>@((ViewBag.Orders[i].NetValue / 100.0).ToString("0.00")) zł</td>
                 <td>@((ViewBag.Orders[i].TaxValue / 100.0).ToString("0.00")) zł</td>
                 <td>@((ViewBag.Orders[i].GrossValue / 100.0).ToString("0.00")) zł</td>
-                <td>@ViewBag.Orders[i].RealisationDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@ViewBag.Orders[i].RealisationDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)</td>
                 <td>@ViewBag.Orders[i].UserName</td>
             </tr>
         }

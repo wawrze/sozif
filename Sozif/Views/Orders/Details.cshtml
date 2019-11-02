@@ -27,7 +27,7 @@
             Data zamówienia
         </dt>
         <dd class="col-sm-10">
-            @(Model.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+            @(Model.OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
         </dd>
         <dt class="col-sm-2">
             Adres realizacji
@@ -59,7 +59,7 @@
         @if (Model.RealisationDate != null)
         {
             <dd class="col-sm-10">
-                @(Model.RealisationDate?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                @(Model.RealisationDate?.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
             </dd>
         }
         else

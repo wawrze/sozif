@@ -22,7 +22,25 @@ namespace Sozif.Controllers
         }
 
         // GET: Orders
-        public async Task<IActionResult> Index(string? order, string? customer, string? address, string? invoice, string? user)
+        public async Task<IActionResult> Index(
+            string? order,
+            string? customer,
+            DateTime? orderFrom,
+            DateTime? orderTo,
+            string? address,
+            int? positionsFrom,
+            int? positionsTo,
+            double? netFrom,
+            double? netTo,
+            double? taxFrom,
+            double? taxTo,
+            double? grossFrom,
+            double? grossTo,
+            DateTime? realisationFrom,
+            DateTime? realisationTo,
+            string? invoice,
+            string? user
+            )
         {
             var orders = await _context.Orders
                 .Where(o => !o.OrderNumber.Contains("R"))
@@ -47,7 +65,55 @@ namespace Sozif.Controllers
                 if (customer != null && customer != "" && !o.Customer.ToString().ToLower().Contains(customer.ToLower())) {
                     show = false;
                 }
+                if (orderFrom != null && o.OrderDate < orderFrom)
+                {
+                    show = false;
+                }
+                if (orderTo != null && o.OrderDate > orderTo)
+                {
+                    show = false;
+                }
                 if (address != null && address != "" && !o.Address.FullAddress.ToLower().Contains(address.ToLower()))
+                {
+                    show = false;
+                }
+                if (positionsFrom != null && o.PositionsCount < positionsFrom)
+                {
+                    show = false;
+                }
+                if (positionsTo != null && o.PositionsCount > positionsTo)
+                {
+                    show = false;
+                }
+                if (netFrom != null && o.NetValue < netFrom * 100)
+                {
+                    show = false;
+                }
+                if (netTo != null && o.NetValue > netTo * 100)
+                {
+                    show = false;
+                }
+                if (taxFrom != null && o.TaxValue < taxFrom * 100)
+                {
+                    show = false;
+                }
+                if (taxTo != null && o.TaxValue > taxTo * 100)
+                {
+                    show = false;
+                }
+                if (grossFrom != null && o.GrossValue < grossFrom * 100)
+                {
+                    show = false;
+                }
+                if (grossTo != null && o.GrossValue > grossTo * 100)
+                {
+                    show = false;
+                }
+                if (realisationFrom != null && (o.RealisationDate == null || o.RealisationDate < realisationFrom))
+                {
+                    show = false;
+                }
+                if (realisationTo != null && (o.RealisationDate == null || o.RealisationDate > realisationTo))
                 {
                     show = false;
                 }
@@ -67,7 +133,19 @@ namespace Sozif.Controllers
 
             ViewBag.CurrentOrder = order;
             ViewBag.CurrentCustomer = customer;
+            ViewBag.OrderFrom = orderFrom?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
+            ViewBag.OrderTo = orderTo?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
             ViewBag.CurrentAddress = address;
+            ViewBag.PositionsFrom = positionsFrom;
+            ViewBag.PositionsTo = positionsTo;
+            ViewBag.NetFrom = netFrom;
+            ViewBag.NetTo = netTo;
+            ViewBag.TaxFrom = taxFrom;
+            ViewBag.TaxTo = taxTo;
+            ViewBag.GrossFrom = grossFrom;
+            ViewBag.GrossTo = grossTo;
+            ViewBag.RealisationFrom = realisationFrom?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
+            ViewBag.RealisationTo = realisationTo?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
             ViewBag.CurrentInvoice = invoice;
             ViewBag.CurrentUser = user;
             return View(ordersToShow);

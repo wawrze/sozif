@@ -18,7 +18,7 @@
     </div>
     <div class="col-md-6">
         <p align="right">
-            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-danger" form="filters" /> 
+            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-danger" form="filters" />
             <input type="submit" id="applyFiltersButton" value="Zastosuj filtry" class="btn btn-primary" form="filters" />
         </p>
     </div>
@@ -65,17 +65,51 @@
         </thead>
         <tbody class="tablesorter-no-sort">
             <tr>
-                <td style="background-color: #99bfe6"/><input type="text" id="orderFilter" name="order" value="@ViewBag.CurrentOrder"></td>
-                <td style="background-color: #99bfe6"><input type="text" id="customerFilter" name="customer" value="@ViewBag.CurrentCustomer"></td>
-                <td style="background-color: #99bfe6"></td>
-                <td style="background-color: #99bfe6"><input type="text" id="addressFilter" name="address" value="@ViewBag.CurrentAddress"></td>
-                <td style="background-color: #99bfe6"></td>
-                <td style="background-color: #99bfe6"></td>
-                <td style="background-color: #99bfe6"></td>
-                <td style="background-color: #99bfe6"></td>
-                <td style="background-color: #99bfe6"></td>
-                <td style="background-color: #99bfe6"><input type="text" id="invoiceFilter" name="invoice" value="@ViewBag.CurrentInvoice"></td>
-                <td style="background-color: #99bfe6"><input type="text" id="userFilter" name="user" value="@ViewBag.CurrentUser"></td>
+                <td style="background-color: #99bfe6; vertical-align: middle" />
+                <input type="text" id="orderFilter" name="order" value="@ViewBag.CurrentOrder">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="customerFilter" name="customer" value="@ViewBag.CurrentCustomer">
+                </td>
+                <td style="background-color: #99bfe6">
+                    od: <input type="date" id="orderFromFilter" name="orderFrom" value="@ViewBag.OrderFrom">
+                    <br />
+                    do: <input type="date" id="orderToFilter" name="orderTo" value="@ViewBag.OrderTo">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="addressFilter" name="address" value="@ViewBag.CurrentAddress">
+                </td>
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" id="positionsFromFilter" min="0" name="positionsFrom" value="@ViewBag.PositionsFrom">
+                    <br />
+                    do: <input type="number" id="positionsToFilter" min="0" name="positionsTo" value="@ViewBag.PositionsTo">
+                </td>
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="netFromFilter" name="netFrom" value="@ViewBag.NetFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="netToFilter" name="netTo" value="@ViewBag.NetTo">
+                </td>
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="taxFromFilter" name="taxFrom" value="@ViewBag.TaxFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="taxToFilter" name="taxTo" value="@ViewBag.TaxTo">
+                </td>
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="grossFromFilter" name="grossFrom" value="@ViewBag.GrossFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="grossToFilter" name="grossTo" value="@ViewBag.GrossTo">
+                </td>
+                <td style="background-color: #99bfe6">
+                    od: <input type="date" id="realisationFromFilter" name="realisationFrom" value="@ViewBag.RealisationFrom">
+                    <br />
+                    do: <input type="date" id="realisationToFilter" name="realisationTo" value="@ViewBag.RealisationTo">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="invoiceFilter" name="invoice" value="@ViewBag.CurrentInvoice">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="userFilter" name="user" value="@ViewBag.CurrentUser">
+                </td>
             </tr>
         </tbody>
         <tbody>
@@ -91,7 +125,7 @@
                         @(item.Customer.ToString())
                     </td>
                     <td>
-                        @(item.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                        @(item.OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
                     </td>
                     <td>
                         @(item.Address.FullAddress)
@@ -109,7 +143,7 @@
                         @((item.GrossValue / 100.0).ToString("0.00")) zł
                     </td>
                     <td>
-                        @(item.RealisationDate?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                        @(item.RealisationDate?.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
@@ -157,11 +191,23 @@
 
 <script type="text/javascript">
     function clearFilters() {
-        document.getElementById("orderFilter").value = "";
-        document.getElementById("customerFilter").value = "";
-        document.getElementById("addressFilter").value = "";
-        document.getElementById("invoiceFilter").value = "";
-        document.getElementById("userFilter").value = "";
+        document.getElementById("orderFilter").value = null;
+        document.getElementById("customerFilter").value = null;
+        document.getElementById("addressFilter").value = null;
+        document.getElementById("invoiceFilter").value = null;
+        document.getElementById("userFilter").value = null;
+        document.getElementById("orderFromFilter").value = null;
+        document.getElementById("orderToFilter").value = null;
+        document.getElementById("positionsFromFilter").value = null;
+        document.getElementById("positionsToFilter").value = null;
+        document.getElementById("realisationFromFilter").value = null;
+        document.getElementById("realisationToFilter").value = null;
+        document.getElementById("netFromFilter").value = null;
+        document.getElementById("netToFilter").value = null;
+        document.getElementById("taxFromFilter").value = null;
+        document.getElementById("taxToFilter").value = null;
+        document.getElementById("grossFromFilter").value = null;
+        document.getElementById("grossToFilter").value = null;
         document.getElementById("applyFiltersButton").click();
     }
 </script>

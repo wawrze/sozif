@@ -20,7 +20,7 @@
             <div class="form-group">
                 <label class="control-label">Data zamówienia</label>
                 <input asp-for="OrderDate" class="form-control" value="@Model.OrderDate" hidden="hidden" />
-                <input class="form-control" value="@Model.OrderDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)" disabled="disabled" />
+                <input class="form-control" value="@Model.OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)" disabled="disabled" />
             </div>
             <input asp-for="RealisationDate" class="form-control" hidden="hidden" />
             <input asp-for="InvoiceId" class="form-control" hidden="hidden" />

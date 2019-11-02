@@ -61,7 +61,7 @@
                     @Html.DisplayFor(modelItem => item.InvoiceNumber)
                 </td>
                 <td>
-                    @(item.InvoiceDate.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                    @(item.InvoiceDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CustomerName)
@@ -85,7 +85,7 @@
                     @((item.GrossValue / 100.0).ToString("0.00")) zł
                 </td>
                 <td>
-                    @(item.InvoiceDate.AddDays(item.DaysToPay).ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo))
+                    @(item.InvoiceDate.AddDays(item.DaysToPay).ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
                 </td>
                 <td>
                     @item.UserName
