@@ -49,7 +49,7 @@
 <hr />
 <h4>Pozycje zamówienia</h4>
 <p>
-    <a asp-action="CreateOrderPosition" asp-route-id="@Model.OrderId"><input class="btn btn-primary" type="button" value="Dodaj pozycję" /></a>
+    <a asp-action="NewPosition" asp-route-id="@Model.OrderId" asp-route-from="Edit"><input class="btn btn-primary" type="button" value="Dodaj pozycję" /></a>
 </p>
 <table class="table">
     <thead>

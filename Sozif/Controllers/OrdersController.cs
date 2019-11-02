@@ -204,7 +204,7 @@ namespace Sozif.Controllers
         }
 
         // GET: Orders/ChooseCustomer
-        public async Task<IActionResult> ChooseCustomer()
+        public async Task<IActionResult> ChooseCustomer(string? name, string? nip, string? contact, string? phone, string? address)
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
@@ -216,7 +216,58 @@ namespace Sozif.Controllers
             if (userWorkingOrder != null) return RedirectToAction("Create", new { id = userWorkingOrder.CustomerId, orderId = userWorkingOrder.OrderId });
 
             var customers = await _context.Customers.Include(c => c.Addresses).OrderBy(c => c.CustomerName).ToListAsync();
-            return View(customers);
+            var customersToShow = new List<Customers>();
+            customers.ForEach(c =>
+            {
+                bool isMatching = true;
+                if (name != null && name != "" && !c.CustomerName.ToLower().Contains(name.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (nip != null && nip != "")
+                {
+                    string justNumber = "";
+                    foreach (char ch in nip)
+                    {
+                        if (ch != '-') justNumber += ch;
+                    }
+                    if (!c.Nip.ToString().Contains(justNumber))
+                    {
+                        isMatching = false;
+                    }
+                }
+                if (contact != null && contact != "" && (c.ContactPerson == null || !c.ContactPerson.ToLower().Contains(contact.ToLower())))
+                {
+                    isMatching = false;
+                }
+                if (phone != null && phone != "")
+                {
+                    string justNumber = "";
+                    foreach (char ch in phone)
+                    {
+                        if (ch != '-') justNumber += ch;
+                    }
+                    if (c.PhoneNumber == null || !c.PhoneNumber.ToString().Contains(justNumber))
+                    {
+                        isMatching = false;
+                    }
+                }
+                if (address != null && address != "" && !c.Addresses.First(a => a.IsMainAddress).FullAddress.ToLower().Contains(address.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (isMatching)
+                {
+                    customersToShow.Add(c);
+                }
+            });
+            @ViewBag.Name = name;
+            @ViewBag.Nip = nip;
+            @ViewBag.Contact = contact;
+            @ViewBag.Phone = phone;
+            @ViewBag.Address = address;
+
+            return View(customersToShow);
         }
 
         // GET: Orders/Create/5
@@ -281,81 +332,6 @@ namespace Sozif.Controllers
             ViewData["AddressId"] = new SelectList(customer.Addresses, "AddressId", "FullAddress");
 
             return View(order);
-        }
-
-        // GET: Orders/CreateNewOrderPosition/5
-        public async Task<IActionResult> CreateNewOrderPosition(int? id)
-        {
-            if (HttpContext.Session.GetString("EditOrders") == "false")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            var order = await _context.Orders
-                .Include(o => o.Customer)
-                .Include(o => o.Address)
-                .FirstOrDefaultAsync(o => o.OrderId == id);
-
-            ViewBag.Customer = order.Customer;
-            ViewBag.Address = order.Address;
-            ViewBag.OrderId = order.OrderId;
-
-            ViewData["ProductId"] = new SelectList(_context.Products.OrderBy(p => p.ProductName), "ProductId", "ProductName");
-            return View();
-        }
-
-        // POST: Orders/CreateNewOrderPosition/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateNewOrderPosition(int? id, [Bind("ProductId,OrderId,Count,Discount")] OrderPositions orderPosition)
-        {
-            if (HttpContext.Session.GetString("EditOrders") == "false")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            string errorMessage = "";
-            var orderPositionInDB = await _context.OrderPositions
-                .Include(op => op.Product)
-                .FirstOrDefaultAsync(op => op.OrderId == orderPosition.OrderId && op.ProductId == orderPosition.ProductId);
-            if (orderPositionInDB != null)
-            {
-                errorMessage = "Zamówienie już zawiera pozycję \"" + orderPositionInDB.Product.ProductName + "\"!";
-            }
-            if (orderPosition.Discount < 0)
-            {
-                errorMessage = "Rabat nie może być ujemny!";
-            }
-            if (orderPosition.Discount > 10)
-            {
-                errorMessage = "Rabat nie może być większy niż 10%!";
-            }
-            if (orderPosition.Count < 0)
-            {
-                errorMessage = "Ilość produktu nie może być ujemna!";
-            }
-            if (orderPosition.Count == 0)
-            {
-                errorMessage = "Ilość produktu musi być różna od zera!";
-            }
-
-            if (ModelState.IsValid && errorMessage == "")
-            {
-                _context.Add(orderPosition);
-                await _context.SaveChangesAsync();
-                var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
-                return RedirectToAction("Create", new { id = order.CustomerId, orderId = id });
-            }
-
-            var orderInfo = await _context.Orders
-                .Include(o => o.Customer)
-                .Include(o => o.Address)
-                .FirstOrDefaultAsync(o => o.OrderId == id);
-
-            ViewBag.Customer = orderInfo.Customer;
-            ViewBag.Address = orderInfo.Address;
-            ViewBag.OrderId = orderInfo.OrderId;
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
-            ViewBag.ErrorMessage = errorMessage;
-            return View(orderPosition);
         }
 
         // GET: Orders/EditNewOrderPosition/5
@@ -778,14 +754,18 @@ namespace Sozif.Controllers
             return RedirectToAction("Details", new { id = id });
         }
 
-        // GET: Orders/CreateOrderPosition/5
-        public async Task<IActionResult> CreateOrderPosition(int? id)
+        // GET: Orders/NewPosition/5
+        public async Task<IActionResult> NewPosition(int? id, string? from)
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
+            {
+                return NotFound();
+            }
+            if (from == null && from != "New" && from != "Edit")
             {
                 return NotFound();
             }
@@ -797,15 +777,16 @@ namespace Sozif.Controllers
             ViewBag.Customer = order.Customer;
             ViewBag.Address = order.Address;
             ViewBag.OrderId = order.OrderId;
+            ViewBag.From = from;
 
             ViewData["ProductId"] = new SelectList(_context.Products.OrderBy(p => p.ProductName), "ProductId", "ProductName");
             return View();
         }
 
-        // POST: Orders/CreateOrderPosition/5
+        // POST: Orders/NewPosition/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOrderPosition(int id, [Bind("ProductId,OrderId,Count,Discount")] OrderPositions orderPosition)
+        public async Task<IActionResult> NewPosition(int id, string from, [Bind("ProductId,OrderId,Count,Discount")] OrderPositions orderPosition)
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
@@ -840,6 +821,12 @@ namespace Sozif.Controllers
             {
                 _context.Add(orderPosition);
                 await _context.SaveChangesAsync();
+
+                if (from == "New")
+                {
+                    var newOrder = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+                    return RedirectToAction("Create", new { id = newOrder.CustomerId, orderId = id });
+                }
                 return RedirectToAction("Edit", new { id = id });
             }
             var order = await _context.Orders

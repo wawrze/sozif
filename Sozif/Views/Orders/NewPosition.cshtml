@@ -1,11 +1,11 @@
 ﻿@model Sozif.OrderPositions
 
 @{
-    ViewData["Title"] = "Dodawanie pozycji nowego zamówienia";
+    ViewData["Title"] = "Dodawanie pozycji zamówienia";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Dodawanie pozycji nowego zamówienia</h1>
+<h1>Dodawanie pozycji zamówienia</h1>
 
 <div class="form-group">
     <label class="control-label">Klient</label>
@@ -21,7 +21,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateNewOrderPosition">
+        <form asp-action="NewPosition">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input asp-for="OrderId" class="form-control" hidden="hidden" value="@ViewBag.OrderId"/>
             <div class="form-group">
@@ -46,6 +46,12 @@
 </div>
 
 <div>
-    <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
+    @if (ViewBag.From == "New")
+    {
+        <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
+    }
+    else
+    {
+        <a asp-action="Edit" asp-route-id="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
+    }
 </div>
-

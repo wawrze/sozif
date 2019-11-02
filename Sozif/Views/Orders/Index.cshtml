@@ -28,28 +28,28 @@
     <table id="OrdersList" class="table table-bordered sortable">
         <thead>
             <tr>
-                <th class="{sorter: 'text'}">
+                <th class="sorter-text">
                     Numer zamówienia
                 </th>
-                <th class="{sorter: 'textPL'}">
+                <th class="sorter-textPL">
                     Klient
                 </th>
                 <th>
                     Data zamówienia
                 </th>
-                <th class="{sorter: 'textPL'}">
+                <th class="sorter-textPL">
                     Adres realizacji
                 </th>
                 <th>
                     Ilość pozycji
                 </th>
-                <th class="{sorter: 'cur'}">
+                <th class="sorter-cur">
                     Wartość netto
                 </th>
-                <th class="{sorter: 'cur'}">
+                <th class="sorter-cur">
                     Wartość VAT
                 </th>
-                <th class="{sorter: 'cur'}">
+                <th class="sorter-cur">
                     Wartość brutto
                 </th>
                 <th>
@@ -58,7 +58,7 @@
                 <th>
                     Numer faktury
                 </th>
-                <th class="{sorter: 'textPL'}">
+                <th class="sorter-textPL">
                     Osoba przyjmująca
                 </th>
             </tr>
@@ -113,11 +113,9 @@
             </tr>
         </tbody>
         <tbody>
-            @{ bool row = true; }
             @foreach (var item in Model)
             {
-                row = !row;
-                <tr onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'" class=@(row ? "d0" : "d1")>
+                <tr onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                     <td>
                         @Html.DisplayFor(modelItem => item.OrderNumber)
                     </td>
@@ -162,20 +160,20 @@
         $(document).ready(function () {
             $.tablesorter.addParser({
                 id: 'cur',
-                is: function (s) {
+                is: function (s, table, cell, $cell) {
                     return false;
                 },
-                format: function (s) {
+                format: function (s, table, cell, $cell) {
                     return s.replace(' zł', '').replace(',', '');
                 },
                 type: 'number'
             });
             $.tablesorter.addParser({
                 id: 'textPL',
-                is: function (s) {
+                is: function (s, table, cell, $cell) {
                     return false;
                 },
-                format: function (s) {
+                format: function (s, table, cell, $cell) {
                     return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
                 },
                 type: 'text'
