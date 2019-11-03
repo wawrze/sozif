@@ -22,12 +22,134 @@ namespace Sozif.Controllers
         }
 
         // GET: Invoices
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? invoice,
+            DateTime? invoiceFrom,
+            DateTime? invoiceTo,
+            string? customer,
+            string? nip,
+            string? address,
+            int? positionsFrom,
+            int? positionsTo,
+            double? netFrom,
+            double? netTo,
+            double? taxFrom,
+            double? taxTo,
+            double? grossFrom,
+            double? grossTo,
+            DateTime? paymentFrom,
+            DateTime? paymentTo,
+            string? user
+        )
         {
-            var sozifContext = _context.Invoices
+            var invoices = await _context.Invoices
                 .Include(i => i.InvoicePositions)
-                .OrderByDescending(i => i.InvoiceId);
-            return View(await sozifContext.ToListAsync());
+                .OrderByDescending(i => i.InvoiceId)
+                .ToListAsync();
+            var invoicesToShow = new List<Invoices>();
+            invoices.ForEach(i =>
+            {
+                bool isMatching = true;
+                if (invoice != null && invoice != "" && !i.InvoiceNumber.ToLower().Contains(invoice.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (invoiceFrom != null && i.InvoiceDate < invoiceFrom)
+                {
+                    isMatching = false;
+                }
+                if (invoiceTo != null && i.InvoiceDate > invoiceTo)
+                {
+                    isMatching = false;
+                }
+                if (customer != null && customer != "" && !i.CustomerName.ToLower().Contains(customer.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (nip != null && nip != "")
+                {
+                    string justNumber = "";
+                    foreach (char ch in nip)
+                    {
+                        if (ch != '-') justNumber += ch;
+                    }
+                    if (!i.CustomerNip.ToString().Contains(justNumber))
+                    {
+                        isMatching = false;
+                    }
+                }
+                if (address != null && address != "" && !i.CustomerAddress.ToLower().Contains(address.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (positionsFrom != null && i.PositionsCount < positionsFrom)
+                {
+                    isMatching = false;
+                }
+                if (positionsTo != null && i.PositionsCount > positionsTo)
+                {
+                    isMatching = false;
+                }
+                if (netFrom != null && i.NetValue < netFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (netTo != null && i.NetValue > netTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (taxFrom != null && i.TaxValue < taxFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (taxTo != null && i.TaxValue > taxTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (grossFrom != null && i.GrossValue < grossFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (grossTo != null && i.GrossValue > grossTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (paymentFrom != null && i.InvoiceDate.AddDays(i.DaysToPay) < paymentFrom)
+                {
+                    isMatching = false;
+                }
+                if (paymentTo != null && i.InvoiceDate.AddDays(i.DaysToPay) > paymentTo)
+                {
+                    isMatching = false;
+                }
+                if (user != null && user != "" && !i.UserName.ToLower().Contains(user.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (isMatching)
+                {
+                    invoicesToShow.Add(i);
+                }
+            });
+            ViewBag.Invoice = invoice;
+            ViewBag.InvoiceFrom = invoiceFrom?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
+            ViewBag.InvoiceTo = invoiceTo?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
+            ViewBag.Customer = customer;
+            ViewBag.Nip = nip;
+            ViewBag.Address = address;
+            ViewBag.PositionsFrom = positionsFrom;
+            ViewBag.PositionsTo = positionsTo;
+            ViewBag.NetFrom = netFrom.ToString().Replace(',', '.');
+            ViewBag.NetTo = netTo.ToString().Replace(',', '.');
+            ViewBag.TaxFrom = taxFrom.ToString().Replace(',', '.');
+            ViewBag.TaxTo = taxTo.ToString().Replace(',', '.');
+            ViewBag.GrossFrom = grossFrom.ToString().Replace(',', '.');
+            ViewBag.GrossTo = grossTo.ToString().Replace(',', '.');
+            ViewBag.PaymentFrom = paymentFrom?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
+            ViewBag.PaymentTo = paymentTo?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
+            ViewBag.User = user;
+
+            return View(invoicesToShow);
         }
 
         // GET: Invoices/Details/5

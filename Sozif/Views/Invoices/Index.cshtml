@@ -7,90 +7,213 @@
 
 <h1>Lista faktur</h1>
 
-<p>
-    @if (Context.Session.GetString("EditInvoices") == "true")
-    {
-        <a asp-action="ChooseCustomer"><input class="btn btn-primary" type="button" value="Wystaw nową fakturę" /></a>
-    }
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Numer faktury
-            </th>
-            <th>
-                Data wystawienia
-            </th>
-            <th>
-                Nazwa klienta
-            </th>
-            <th>
-                NIP klienta
-            </th>
-            <th>
-                Adres klienta
-            </th>
-            <th>
-                Ilość pozycji
-            </th>
-            <th>
-                Wartość netto
-            </th>
-            <th>
-                Wartość VAT
-            </th>
-            <th>
-                Wartość brutto
-            </th>
-            <th>
-                Termin płatności
-            </th>
-            <th>
-                Osoba wystawiająca
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @{ bool row = true; }
-        @foreach (var item in Model)
-        {
-            row = !row;
-            <tr onclick="location.href = '@(Url.Action("Details", "Invoices", new { id = item.InvoiceId }))'" class=@(row ? "d0" : "d1")>
-                <td>
-                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            @if (Context.Session.GetString("EditInvoices") == "true")
+            {
+                <a asp-action="ChooseCustomer"><input class="btn btn-primary" type="button" value="Wystaw nową fakturę" /></a>
+            }
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p align="right">
+            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-danger" form="filters" />
+            <input type="submit" id="applyFiltersButton" value="Zastosuj filtry" class="btn btn-primary" form="filters" />
+        </p>
+    </div>
+</div>
+<form asp-action="Index" id="filters" method="get">
+    <table id="Invoices" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th class="sorter-text" style="vertical-align: middle">
+                    Numer faktury
+                </th>
+                <th style="vertical-align: middle">
+                    Data wystawienia
+                </th>
+                <th class="sorter-textPL" style="vertical-align: middle">
+                    Nazwa klienta
+                </th>
+                <th class="sorter-simpleNumber">
+                    NIP klienta
+                </th>
+                <th class="sorter-textPL" style="vertical-align: middle">
+                    Adres klienta
+                </th>
+                <th style="vertical-align: middle">
+                    Ilość pozycji
+                </th>
+                <th class="sorter-cur" style="vertical-align: middle">
+                    Wartość netto
+                </th>
+                <th class="sorter-cur" style="vertical-align: middle">
+                    Wartość VAT
+                </th>
+                <th class="sorter-cur" style="vertical-align: middle">
+                    Wartość brutto
+                </th>
+                <th style="vertical-align: middle">
+                    Termin płatności
+                </th>
+                <th class="sorter-textPL" style="vertical-align: middle">
+                    Osoba wystawiająca
+                </th>
+            </tr>
+        </thead>
+        <tbody class="tablesorter-no-sort">
+            <tr>
+                <td style="background-color: #99bfe6; vertical-align: middle" />
+                <input type="text" id="invoiceFilter" name="invoice" value="@ViewBag.Invoice">
                 </td>
-                <td>
-                    @(item.InvoiceDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
+                <td style="background-color: #99bfe6">
+                    od: <input type="date" id="invoiceFromFilter" name="invoiceFrom" value="@ViewBag.InvoiceFrom">
+                    <br />
+                    do: <input type="date" id="invoiceToFilter" name="invoiceTo" value="@ViewBag.InvoiceTo">
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CustomerName)
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="customerFilter" name="customer" value="@ViewBag.Customer">
                 </td>
-                <td>
-                    @item.NipString
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="nipFilter" name="nip" value="@ViewBag.Nip">
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CustomerAddress), @Html.DisplayFor(modelItem => item.CustomerPostalCode) @Html.DisplayFor(modelItem => item.CustomerCity)
+                <td style="background-color: #99bfe6">
+                    <input type="text" id="addressFilter" name="address" value="@ViewBag.Address">
                 </td>
-                <td>
-                    @item.PositionsCount
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" id="positionsFromFilter" min="0" name="positionsFrom" value="@ViewBag.PositionsFrom">
+                    <br />
+                    do: <input type="number" id="positionsToFilter" min="0" name="positionsTo" value="@ViewBag.PositionsTo">
                 </td>
-                <td>
-                    @((item.NetValue / 100.0).ToString("0.00")) zł
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="netFromFilter" name="netFrom" value="@ViewBag.NetFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="netToFilter" name="netTo" value="@ViewBag.NetTo">
                 </td>
-                <td>
-                    @((item.TaxValue / 100.0).ToString("0.00")) zł
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="taxFromFilter" name="taxFrom" value="@ViewBag.TaxFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="taxToFilter" name="taxTo" value="@ViewBag.TaxTo">
                 </td>
-                <td>
-                    @((item.GrossValue / 100.0).ToString("0.00")) zł
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="grossFromFilter" name="grossFrom" value="@ViewBag.GrossFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="grossToFilter" name="grossTo" value="@ViewBag.GrossTo">
                 </td>
-                <td>
-                    @(item.InvoiceDate.AddDays(item.DaysToPay).ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
+                <td style="background-color: #99bfe6">
+                    od: <input type="date" id="paymentFromFilter" name="paymentFrom" value="@ViewBag.PaymentFrom">
+                    <br />
+                    do: <input type="date" id="paymentToFilter" name="paymentTo" value="@ViewBag.PaymentTo">
                 </td>
-                <td>
-                    @item.UserName
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="userFilter" name="user" value="@ViewBag.User">
                 </td>
             </tr>
-        }
-    </tbody>
-</table>
+        </tbody>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr onclick="location.href = '@(Url.Action("Details", "Invoices", new { id = item.InvoiceId }))'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                    </td>
+                    <td>
+                        @(item.InvoiceDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CustomerName)
+                    </td>
+                    <td>
+                        @item.NipString
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CustomerAddress), @Html.DisplayFor(modelItem => item.CustomerPostalCode) @Html.DisplayFor(modelItem => item.CustomerCity)
+                    </td>
+                    <td>
+                        @item.PositionsCount
+                    </td>
+                    <td>
+                        @((item.NetValue / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @((item.TaxValue / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @((item.GrossValue / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @(item.InvoiceDate.AddDays(item.DaysToPay).ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
+                    </td>
+                    <td>
+                        @item.UserName
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'cur',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace(' zł', '').replace(',', '');
+                },
+                type: 'number'
+            });
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+            $.tablesorter.addParser({
+                id: 'simpleNumber',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace('-', '');
+                },
+                type: 'text'
+            });
+            $("#Invoices").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}
+
+<script type="text/javascript">
+    function clearFilters() {
+        document.getElementById("invoiceFilter").value = null;
+        document.getElementById("invoiceFromFilter").value = null;
+        document.getElementById("invoiceToFilter").value = null;
+        document.getElementById("customerFilter").value = null;
+        document.getElementById("nipFilter").value = null;
+        document.getElementById("addressFilter").value = null;
+        document.getElementById("positionsFromFilter").value = null;
+        document.getElementById("positionsToFilter").value = null;
+        document.getElementById("netFromFilter").value = null;
+        document.getElementById("netToFilter").value = null;
+        document.getElementById("taxFromFilter").value = null;
+        document.getElementById("taxToFilter").value = null;
+        document.getElementById("grossFromFilter").value = null;
+        document.getElementById("grossToFilter").value = null;
+        document.getElementById("paymentFromFilter").value = null;
+        document.getElementById("paymentToFilter").value = null;
+        document.getElementById("userFilter").value = null;
+        document.getElementById("applyFiltersButton").click();
+    }
+</script>
