@@ -44,55 +44,91 @@
     <hr />
     <h4>Wybierz zamówienia</h4>
     <h5 class="error-message">@ViewBag.ErrorMessage</h5>
-    <table class="table">
-        <tr>
-            <th hidden="hidden" />
-            <th>
-                Włącz do faktury
-            </th>
-            <th>
-                Numer zamówienia
-            </th>
-            <th>
-                Data zamówienia
-            </th>
-            <th>
-                Adres realizacji
-            </th>
-            <th>
-                Ilość pozycji
-            </th>
-            <th>
-                Wartość netto
-            </th>
-            <th>
-                Wartość VAT
-            </th>
-            <th>
-                Wartość brutto
-            </th>
-            <th>
-                Data realizacji
-            </th>
-            <th>
-                Osoba przyjmująca
-            </th>
-        </tr>
-        @for (var i = 0; i < ViewBag.Orders.Count; i++)
-        {
-            <tr class=@(i % 2 == 0 ? "d0" : "d1")>
-                <td hidden="hidden"><input asp-for="@Model.Orders[i].Key" value="@ViewBag.Orders[i].OrderId" /></td>
-                <td><input asp-for="@Model.Orders[i].Value" /></td>
-                <td>@ViewBag.Orders[i].OrderNumber</td>
-                <td>@ViewBag.Orders[i].OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)</td>
-                <td>@ViewBag.Orders[i].Address.FullAddress</td>
-                <td>@ViewBag.Orders[i].PositionsCount</td>
-                <td>@((ViewBag.Orders[i].NetValue / 100.0).ToString("0.00")) zł</td>
-                <td>@((ViewBag.Orders[i].TaxValue / 100.0).ToString("0.00")) zł</td>
-                <td>@((ViewBag.Orders[i].GrossValue / 100.0).ToString("0.00")) zł</td>
-                <td>@ViewBag.Orders[i].RealisationDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)</td>
-                <td>@ViewBag.Orders[i].UserName</td>
+    <table id="OrdersList" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th hidden="hidden" class="sorter-false" />
+                <th class="sorter-false" style="vertical-align: middle">
+                    Włącz do faktury
+                </th>
+                <th class="sorter-text" style="vertical-align: middle">
+                    Numer zamówienia
+                </th>
+                <th style="vertical-align: middle">
+                    Data zamówienia
+                </th>
+                <th class="sorter-textPL" style="vertical-align: middle">
+                    Adres realizacji
+                </th>
+                <th style="vertical-align: middle">
+                    Ilość pozycji
+                </th>
+                <th class="sorter-cur" style="vertical-align: middle">
+                    Wartość netto
+                </th>
+                <th class="sorter-cur" style="vertical-align: middle">
+                    Wartość VAT
+                </th>
+                <th class="sorter-cur" style="vertical-align: middle">
+                    Wartość brutto
+                </th>
+                <th style="vertical-align: middle">
+                    Data realizacji
+                </th>
+                <th class="sorter-textPL" style="vertical-align: middle">
+                    Osoba przyjmująca
+                </th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @for (var i = 0; i < ViewBag.Orders.Count; i++)
+            {
+                <tr class=@(i % 2 == 0 ? "d0" : "d1")>
+                    <td hidden="hidden"><input asp-for="@Model.Orders[i].Key" value="@ViewBag.Orders[i].OrderId" /></td>
+                    <td><input asp-for="@Model.Orders[i].Value" /></td>
+                    <td>@ViewBag.Orders[i].OrderNumber</td>
+                    <td>@ViewBag.Orders[i].OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)</td>
+                    <td>@ViewBag.Orders[i].Address.FullAddress</td>
+                    <td>@ViewBag.Orders[i].PositionsCount</td>
+                    <td>@((ViewBag.Orders[i].NetValue / 100.0).ToString("0.00")) zł</td>
+                    <td>@((ViewBag.Orders[i].TaxValue / 100.0).ToString("0.00")) zł</td>
+                    <td>@((ViewBag.Orders[i].GrossValue / 100.0).ToString("0.00")) zł</td>
+                    <td>@ViewBag.Orders[i].RealisationDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)</td>
+                    <td>@ViewBag.Orders[i].UserName</td>
+                </tr>
+            }
+        </tbody>
     </table>
 </form>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'cur',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace(' zł', '').replace(',', '');
+                },
+                type: 'number'
+            });
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+
+            $("#OrdersList").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}

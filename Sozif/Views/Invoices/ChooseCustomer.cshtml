@@ -10,59 +10,133 @@
 <div>
     <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy faktur" /></a>
 </div>
-
 <hr />
-<h4>Wybierz klienta</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Nazwa
-            </th>
-            <th>
-                NIP
-            </th>
-            <th>
-                Osoba do kontaktu
-            </th>
-            <th>
-                Nr telefonu
-            </th>
-            <th>
-                Adres
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @{ bool row = true; }
-        @foreach (var item in Model)
-        {
-            row = !row;
-            <tr onclick="location.href = '@(Url.Action("ChooseOrders", "Invoices", new { id = item.CustomerId }))'" class=@(row ? "d0" : "d1")>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CustomerName)
+
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            <h4>Wybierz klienta</h4>
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p align="right">
+            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-warning" form="filters" />
+            <input type="submit" id="applyFiltersButton" value="Zastosuj filtry" class="btn btn-info" form="filters" />
+        </p>
+    </div>
+</div>
+
+<form asp-action="ChooseCustomer" id="filters" method="get">
+    <table id="Customers" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th class="sorter-textPL">
+                    Nazwa
+                </th>
+                <th class="sorter-simpleNumber">
+                    NIP
+                </th>
+                <th class="sorter-textPL">
+                    Osoba do kontaktu
+                </th>
+                <th class="sorter-simpleNumber">
+                    Nr telefonu
+                </th>
+                <th class="sorter-textPL">
+                    Adres
+                </th>
+            </tr>
+        </thead>
+        <tbody class="tablesorter-no-sort">
+            <tr>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="nameFilter" name="name" value="@ViewBag.Name">
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NipString)
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="nipFilter" name="nip" value="@ViewBag.Nip">
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ContactPerson)
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="contactFilter" name="contact" value="@ViewBag.Contact">
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhoneNumberString)
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="phoneFilter" name="phone" value="@ViewBag.Phone">
                 </td>
-                <td>
-                    @{
-                        foreach (Addresses address in item.Addresses)
-                        {
-                            if (address.IsMainAddress)
-                            {
-                                <text>@address.FullAddress</text>
-                            }
-                        }
-                    }
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="addressFilter" name="address" value="@ViewBag.Address">
                 </td>
             </tr>
-        }
-    </tbody>
-</table>
+        </tbody>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr onclick="location.href = '@(Url.Action("ChooseOrders", "Invoices", new { id = item.CustomerId }))'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CustomerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NipString)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ContactPerson)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PhoneNumberString)
+                    </td>
+                    <td>
+                        @{
+                            foreach (Addresses address in item.Addresses)
+                            {
+                                if (address.IsMainAddress)
+                                {
+                                    <text>@address.FullAddress</text>
+                                }
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+            $.tablesorter.addParser({
+                id: 'simpleNumber',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace('-', '');
+                },
+                type: 'text'
+            });
+            $("#Customers").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}
+
+<script type="text/javascript">
+    function clearFilters() {
+        document.getElementById("nameFilter").value = null;
+        document.getElementById("nipFilter").value = null;
+        document.getElementById("contactFilter").value = null;
+        document.getElementById("phoneFilter").value = null;
+        document.getElementById("addressFilter").value = null;
+        document.getElementById("applyFiltersButton").click();
+    }
+</script>

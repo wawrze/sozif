@@ -264,11 +264,11 @@ namespace Sozif.Controllers
                     customersToShow.Add(c);
                 }
             });
-            @ViewBag.Name = name;
-            @ViewBag.Nip = nip;
-            @ViewBag.Contact = contact;
-            @ViewBag.Phone = phone;
-            @ViewBag.Address = address;
+            ViewBag.Name = name;
+            ViewBag.Nip = nip;
+            ViewBag.Contact = contact;
+            ViewBag.Phone = phone;
+            ViewBag.Address = address;
 
             return View(customersToShow);
         }
