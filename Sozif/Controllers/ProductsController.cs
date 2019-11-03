@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sozif.Attributes;
 using Sozif.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,10 +21,51 @@ namespace Sozif.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? name, decimal? netFrom, decimal? netTo, int? tax, decimal? grossFrom, decimal? grossTo)
         {
-            var sozifContext = _context.Products.OrderBy(p => p.ProductName).Include(p => p.TaxRate);
-            return View(await sozifContext.ToListAsync());
+            var products = await _context.Products.OrderBy(p => p.ProductName).Include(p => p.TaxRate).ToListAsync();
+            var productsToShow = new List<Products>();
+            products.ForEach(p =>
+            {
+                bool isMatching = true;
+                if (name != null && name != "" && !p.ProductName.ToLower().Contains(name.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (netFrom != null && p.BaseNetPrice < netFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (netTo != null && p.BaseNetPrice > netTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (tax != null && p.TaxRateId != tax)
+                {
+                    isMatching = false;
+                }
+                if (grossFrom != null && p.BaseGrossPrice < grossFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (grossTo != null && p.BaseGrossPrice > grossTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (isMatching)
+                {
+                    productsToShow.Add(p);
+                }
+            });
+            ViewBag.TaxRates = await _context.TaxRates.ToListAsync();
+            ViewBag.Name = name;
+            ViewBag.NetFrom = netFrom.ToString().Replace(',', '.');
+            ViewBag.NetTo = netTo.ToString().Replace(',', '.');
+            ViewBag.Tax = tax;
+            ViewBag.GrossFrom = grossFrom.ToString().Replace(',', '.');
+            ViewBag.GrossTo = grossTo.ToString().Replace(',', '.');
+
+            return View(productsToShow);
         }
 
         // GET: Products/Details/5

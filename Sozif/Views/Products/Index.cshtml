@@ -7,48 +7,142 @@
 
 <h1>Lista produktów</h1>
 
-@if (Context.Session.GetString("EditProducts") == "true")
-{
-    <p>
-        <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj produkt" /></a>
-    </p>
-}
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Nazwa produktu
-            </th>
-            <th>
-                Cena netto
-            </th>
-            <th>
-                Stawka VAT
-            </th>
-            <th>
-                Cena brutto
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @{ bool row = true; }
-        @foreach (var item in Model)
-        {
-            row = !row;
-            <tr onclick="location.href = '@(Url.Action("Details", "Products", new { id = item.ProductId }))'" class=@(row ? "d0" : "d1")>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            @if (Context.Session.GetString("EditProducts") == "true")
+            {
+                <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj produkt" /></a>
+            }
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p align="right">
+            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-danger" form="filters" />
+            <input type="submit" id="applyFiltersButton" value="Zastosuj filtry" class="btn btn-primary" form="filters" />
+        </p>
+    </div>
+</div>
+<form asp-action="Index" id="filters" method="get">
+    <table id="Products" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th class="sorter-textPL">
+                    Nazwa produktu
+                </th>
+                <th class="sorter-cur">
+                    Cena netto
+                </th>
+                <th>
+                    Stawka VAT
+                </th>
+                <th class="sorter-cur">
+                    Cena brutto
+                </th>
+            </tr>
+        </thead>
+        <tbody class="tablesorter-no-sort">
+            <tr>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="nameFilter" name="name" value="@ViewBag.Name">
                 </td>
-                <td>
-                    @((item.BaseNetPrice / 100.0).ToString("0.00")) zł
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="netFromFilter" name="netFrom" value="@ViewBag.NetFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="netToFilter" name="netTo" value="@ViewBag.NetTo">
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TaxRate.Rate)%
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <select name="tax" id="taxFilter" value="@ViewBag.Tax" style="width: 50%">
+                        @if (ViewBag.Tax == null)
+                        {
+                            <option value="@null" selected="selected"></option>
+                        }
+                        else
+                        {
+                            <option value="@null"></option>
+                        }
+                        @foreach (TaxRates taxRate in ViewBag.TaxRates)
+                        {
+                            @if (ViewBag.Tax == taxRate.TaxRateId)
+                            {
+                                <option value="@taxRate.TaxRateId" selected="selected">@(taxRate.Rate)%</option>
+                            }
+                            else
+                            {
+                                <option value="@taxRate.TaxRateId">@(taxRate.Rate)%</option>
+                            }
+                        }
+                    </select>
                 </td>
-                <td>
-                    @((item.BaseGrossPrice / 100.0).ToString("0.00")) zł
+                <td style="background-color: #99bfe6">
+                    od: <input type="number" step="0.01" min="0" id="grossFromFilter" name="grossFrom" value="@ViewBag.GrossFrom">
+                    <br />
+                    do: <input type="number" step="0.01" min="0" id="grossToFilter" name="grossTo" value="@ViewBag.GrossTo">
                 </td>
             </tr>
-        }
-    </tbody>
-</table>
+        </tbody>
+        <tbody>
+            @foreach (Products item in Model)
+            {
+                <tr onclick="location.href = '@(Url.Action("Details", "Products", new { id = item.ProductId }))'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td>
+                        @((item.BaseNetPrice / 100.0).ToString("0.00")) zł
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxRate.Rate)%
+                    </td>
+                    <td>
+                        @((item.BaseGrossPrice / 100.0).ToString("0.00")) zł
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'cur',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace(' zł', '').replace(',', '');
+                },
+                type: 'number'
+            });
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+
+            $("#Products").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}
+
+<script type="text/javascript">
+    function clearFilters() {
+        document.getElementById("nameFilter").value = null;
+        document.getElementById("netFromFilter").value = null;
+        document.getElementById("netToFilter").value = null;
+        document.getElementById("taxFilter").value = null;
+        document.getElementById("grossFromFilter").value = null;
+        document.getElementById("grossToFilter").value = null;
+        document.getElementById("applyFiltersButton").click();
+    }
+</script>
