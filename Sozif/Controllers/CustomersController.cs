@@ -19,9 +19,61 @@ namespace Sozif.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? name, string? nip, string? contact, string? phone, string? address)
         {
-            return View(await _context.Customers.OrderBy(c => c.CustomerName).Include(c => c.Addresses).ToListAsync());
+            var customers = await _context.Customers.OrderBy(c => c.CustomerName).Include(c => c.Addresses).ToListAsync();
+            var customersToShow = new List<Customers>();
+            customers.ForEach(c =>
+            {
+                bool isMatching = true;
+                if (name != null && name != "" && !c.CustomerName.ToLower().Contains(name.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (nip != null && nip != "")
+                {
+                    string justNumber = "";
+                    foreach (char ch in nip)
+                    {
+                        if (ch != '-') justNumber += ch;
+                    }
+                    if (!c.Nip.ToString().Contains(justNumber))
+                    {
+                        isMatching = false;
+                    }
+                }
+                if (contact != null && contact != "" && (c.ContactPerson == null || !c.ContactPerson.ToLower().Contains(contact.ToLower())))
+                {
+                    isMatching = false;
+                }
+                if (phone != null && phone != "")
+                {
+                    string justNumber = "";
+                    foreach (char ch in phone)
+                    {
+                        if (ch != '-') justNumber += ch;
+                    }
+                    if (c.PhoneNumber == null || !c.PhoneNumber.ToString().Contains(justNumber))
+                    {
+                        isMatching = false;
+                    }
+                }
+                if (address != null && address != "" && !c.Addresses.First(a => a.IsMainAddress).FullAddress.ToLower().Contains(address.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (isMatching)
+                {
+                    customersToShow.Add(c);
+                }
+            });
+            @ViewBag.Name = name;
+            @ViewBag.Nip = nip;
+            @ViewBag.Contact = contact;
+            @ViewBag.Phone = phone;
+            @ViewBag.Address = address;
+
+            return View(customersToShow);
         }
 
         // GET: Customers/Details/5
