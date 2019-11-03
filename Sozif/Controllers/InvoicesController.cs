@@ -207,7 +207,7 @@ namespace Sozif.Controllers
                 .Include(o => o.OrderPositions)
                     .ThenInclude(op => op.Product)
                     .ThenInclude(p => p.TaxRate)
-                .Where(o => o.CustomerId == id && o.InvoiceId == null)
+                .Where(o => o.CustomerId == id && o.InvoiceId == null && o.RealisationDate != null)
                 .ToListAsync();
             InvoiceDTO invoice = new InvoiceDTO();
             invoice.CustomerName = customer.CustomerName;
@@ -219,10 +219,39 @@ namespace Sozif.Controllers
             return View(invoice);
         }
 
+        // GET: Invoices/FromOrder?customerId=5&orderId=5
+        public async Task<IActionResult> FromOrder(int? customerId, int? orderId)
+        {
+            if (HttpContext.Session.GetString("EditInvoices") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (orderId == null || customerId == null)
+            {
+                return NotFound();
+            }
+            var customer = await _context.Customers.Include(c => c.Addresses).Where(c => c.CustomerId == customerId).FirstOrDefaultAsync();
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            var newInvoice = new InvoiceDTO();
+            newInvoice.CustomerName = customer.CustomerName;
+            newInvoice.CustomerNip = customer.NipString;
+            newInvoice.CustomerAddress = customer.Addresses.First(a => a.IsMainAddress).FullAddress;
+            var customerAllOrders = await _context.Orders
+                .Where(o => o.CustomerId == customerId && o.RealisationDate != null)
+                .ToListAsync();
+            customerAllOrders.ForEach(o => newInvoice.Orders.Add(new KeyValuePair<int, bool>(o.OrderId, o.OrderId == orderId)));
+
+            return await ChooseOrders(customerId, "order", newInvoice);
+        }
+
+
         // GET: Invoices/ChooseOrders/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChooseOrders(int? id, [Bind("Orders")] InvoiceDTO invoice)
+        public async Task<IActionResult> ChooseOrders(int? id, string? from, [Bind("Orders")] InvoiceDTO invoice)
         {
             if (HttpContext.Session.GetString("EditInvoices") == "false")
             {
@@ -248,14 +277,17 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
-
+            if (from != null)
+            {
+                ViewBag.From = from;
+            }
             var ordersToInvoiceIds = new List<int>();
             invoice.Orders.ForEach(o => { if (o.Value) ordersToInvoiceIds.Add(o.Key); });
             if (ordersToInvoiceIds.Count == 0)
             {
                 ViewBag.ErrorMessage = "Musisz wybrać przynajmniej jedno zamówienie, do którego chcesz wystawić fakturę!";
             }
-            if (ViewBag.ErrorMessage == null)
+            if (ViewBag.ErrorMessage == null && ViewBag.From == null)
             {
                 var lastInvoiceInDB = await _context.Invoices
                     .OrderByDescending(o => o.InvoiceId)
@@ -339,16 +371,21 @@ namespace Sozif.Controllers
                 .Include(o => o.OrderPositions)
                 .ThenInclude(op => op.Product)
                 .ThenInclude(p => p.TaxRate)
-                .Where(o => o.CustomerId == id && o.InvoiceId == null)
+                .Where(o => o.CustomerId == id && o.InvoiceId == null && o.RealisationDate != null)
                 .ToListAsync();
             ViewBag.Orders = ordersToChooseFrom;
-            invoice.Orders.Clear();
-            ordersToChooseFrom.ForEach(o => invoice.Orders.Add(new KeyValuePair<int, bool>(o.OrderId, false)));
+            if (invoice.Orders.Count == 0)
+            {
+                ordersToChooseFrom.ForEach(o =>
+                {
+                    invoice.Orders.Add(new KeyValuePair<int, bool>(o.OrderId, false));
+                });
+            }
             invoice.CustomerName = customer.CustomerName;
             invoice.CustomerNip = customer.NipString;
             invoice.CustomerAddress = customer.Addresses.First(a => a.IsMainAddress).FullAddress;
 
-            return View(invoice);
+            return View("ChooseOrders", invoice);
         }
 
         private bool InvoicesExists(int id)

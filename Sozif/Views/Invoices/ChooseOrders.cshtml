@@ -32,7 +32,14 @@
 
     <div class="form-group">
         <input type="submit" value="Wystaw fakturę" class="btn btn-primary" />
-        <a asp-action="ChooseCustomer"><input class="btn btn-secondary" type="button" value="Wróć do wyboru klienta" /></a>
+        @if (ViewBag.From != null && ViewBag.From == "order")
+        {
+            <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Orders.First(o => o.Value == true).Key"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
+        }
+        else
+        {
+            <a asp-action="ChooseCustomer"><input class="btn btn-secondary" type="button" value="Wróć do wyboru klienta" /></a>
+        }
     </div>
     <hr />
     <h4>Wybierz zamówienia</h4>

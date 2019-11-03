@@ -88,9 +88,13 @@
 <div>
     @if (Model.RealisationDate == null && Context.Session.GetString("EditOrders") == "true")
     {
-        <a asp-action="Completed" asp-route-id="@Model.OrderId"><input class="btn btn-primary" type="button" value="Oznacz jako zrealizowane" /></a>
+        <a asp-action="Completed" asp-route-id="@Model.OrderId"><input class="btn btn-outline-success" type="button" value="Oznacz jako zrealizowane" /></a>
         <a asp-action="Edit" asp-route-id="@Model.OrderId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
         <a asp-action="Delete" asp-route-id="@Model.OrderId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
+    }
+    else if (Context.Session.GetString("EditInvoices") == "true")
+    {
+        <a asp-action="FromOrder" asp-controller="Invoices" asp-route-orderId="@Model.OrderId" asp-route-customerId="@Model.CustomerId"><input class="btn btn-outline-success" type="button" value="Wystaw fakturę" /></a>
     }
     <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy zamówień" /></a>
 </div>

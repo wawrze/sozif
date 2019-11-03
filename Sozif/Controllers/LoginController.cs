@@ -23,7 +23,8 @@ namespace Sozif.Controllers
         // GET: Login
         public IActionResult Index()
         {
-            return View();
+            LoginDTO loginDTO = new LoginDTO();
+            return View(loginDTO);
         }
 
         // POST: Login
@@ -32,6 +33,12 @@ namespace Sozif.Controllers
         public async Task<IActionResult> Index([Bind("Username,Password")] LoginDTO loginDTO)
         {
             String message = "";
+            if (loginDTO.Username == null || loginDTO.Password == null || loginDTO.Username == "" || loginDTO.Password == "")
+            {
+                ViewBag.ErrorMessage = "Musisz uzupełnić wszystkie pola!";
+                return View(loginDTO);
+            }
+
             Users user = await _context.Users.FirstOrDefaultAsync(u => u.Username == loginDTO.Username);
 
             if (user == null)
@@ -62,7 +69,7 @@ namespace Sozif.Controllers
             }
             ViewBag.ErrorMessage = message;
 
-            return View();
+            return View(loginDTO);
         }
 
         // GET: Login/PasswordChange

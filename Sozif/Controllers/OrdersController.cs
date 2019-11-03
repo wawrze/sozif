@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sozif.Attributes;
+using Sozif.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -173,6 +174,8 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            var newInvoice = new InvoiceDTO();
+            ViewBag.InvoiceDTO = newInvoice;
 
             return View(orders);
         }
