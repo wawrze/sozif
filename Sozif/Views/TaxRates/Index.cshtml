@@ -5,30 +5,32 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    <h1>Lista stawek VAT</h1>
+<h1>Lista stawek VAT</h1>
 
-<p>
-    <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj nową stawkę" /></a>
-</p>
-<table class="table">
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj nową stawkę" /></a>
+        </p>
+    </div>
+</div>
+<table id="TaxRates" class="table table-bordered sortable">
     <thead>
         <tr>
             <th>
                 Stawka
             </th>
-            <th></th>
+            <th class="sorter-false"></th>
         </tr>
     </thead>
     <tbody>
-        @{ bool row = true; }
         @foreach (var item in Model)
         {
-            row = !row;
-            <tr class=@(row ? "d0" : "d1")>
-                <td>
+            <tr>
+                <td style="vertical-align: middle">
                     @Html.DisplayFor(modelItem => item.Rate)%
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     <a asp-action="Edit" asp-route-id="@item.TaxRateId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
                     <a asp-action="Delete" asp-route-id="@item.TaxRateId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
                 </td>
@@ -36,3 +38,14 @@
         }
     </tbody>
 </table>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#TaxRates").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}

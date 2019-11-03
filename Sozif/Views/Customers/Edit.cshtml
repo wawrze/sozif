@@ -17,12 +17,12 @@
             <input type="hidden" asp-for="CustomerId" />
             <div class="form-group">
                 <label class="control-label">Nazwa klienta</label>
-                <input asp-for="CustomerName" class="form-control"/>
+                <input asp-for="CustomerName" class="form-control" />
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">NIP</label>
-                <input asp-for="NipString" class="form-control" pattern="[0-9-]{10,13}" value="@Model.NipString"/>
+                <input asp-for="NipString" class="form-control" pattern="[0-9-]{10,13}" value="@Model.NipString" />
                 <span asp-validation-for="NipString" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -32,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Numer telefonu</label>
-                <input asp-for="PhoneNumberString" class="form-control" pattern="[0-9-]{9,13}" value="@Model.PhoneNumberString"/>
+                <input asp-for="PhoneNumberString" class="form-control" pattern="[0-9-]{9,13}" value="@Model.PhoneNumberString" />
                 <span asp-validation-for="PhoneNumberString" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -40,67 +40,86 @@
             </div>
         </form>
     </div>
+    <div class="col-md-8">
+        <h4>Adresy klienta</h4>
+        <p>
+            <a asp-action="CreateAddress" asp-route-id="@Model.CustomerId"><input class="btn btn-primary" type="button" value="Dodaj adres" /></a>
+        </p>
+        <table id="Addresses" class="table table-bordered sortable">
+            <thead>
+                <tr>
+                    <th class="sorter-textPL">
+                        Adres
+                    </th>
+                    <th>
+                        Kod pocztowy
+                    </th>
+                    <th class="sorter-textPL">
+                        Miasto
+                    </th>
+                    <th>
+                        Czy główny
+                    </th>
+                    <th class="sorter-false"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Addresses)
+                {
+                    <tr>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.Street)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.PostalCode)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.City)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @{
+                                if (item.IsMainAddress)
+                                {
+                                    <text>TAK</text>
+                                }
+                                else
+                                {
+                                    <text>NIE</text>
+                                }
+                            }
+                        </td>
+                        <td style="vertical-align: middle">
+                            <a asp-action="EditAddress" asp-route-id="@item.AddressId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+                            <a asp-action="DeleteAddress" asp-route-id="@item.AddressId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div>
     <a asp-action="Details" asp-route-id="@Model.CustomerId"><input class="btn btn-secondary" type="button" value="Wróć do szczegółów klienta" /></a>
 </div>
 
-<hr />
-<h4>Adresy klienta</h4>
-<p>
-    <a asp-action="CreateAddress" asp-route-id="@Model.CustomerId"><input class="btn btn-primary" type="button" value="Dodaj adres" /></a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Adres
-            </th>
-            <th>
-                Kod pocztowy
-            </th>
-            <th>
-                Miasto
-            </th>
-            <th>
-                Czy główny
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @{ bool row = true; }
-        @foreach (var item in Model.Addresses)
-        {
-            row = !row;
-            <tr class=@(row ? "d0" : "d1")>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Street)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PostalCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.City)
-                </td>
-                <td>
-                    @{
-                        if (item.IsMainAddress)
-                        {
-                            <text>TAK</text>
-                        }
-                        else
-                        {
-                            <text>NIE</text>
-                        }
-                    }
-                </td>
-                <td>
-                    <a  asp-action="EditAddress" asp-route-id="@item.AddressId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a> 
-                    <a asp-action="DeleteAddress" asp-route-id="@item.AddressId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+            $("#Addresses").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}
