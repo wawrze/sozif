@@ -96,69 +96,108 @@
 </div>
 <hr />
 <h4>Pozycje zamówienia</h4>
-<table class="table">
+<table id="Positions" class="table table-bordered sortable">
     <thead>
         <tr>
-            <th>
+            <th class="sorter-textPL" style="vertical-align: middle">
                 Produkt
             </th>
-            <th>
+            <th style="vertical-align: middle">
                 Ilość
             </th>
-            <th>
+            <th class="sorter-cur" style="vertical-align: middle">
                 Cena netto
             </th>
-            <th>
+            <th class="sorter-perc" style="vertical-align: middle">
                 Rabat
             </th>
-            <th>
+            <th class="sorter-cur" style="vertical-align: middle">
                 Cena netto po rabacie
             </th>
-            <th>
+            <th class="sorter-cur" style="vertical-align: middle">
                 Suma netto
             </th>
-            <th>
+            <th class="sorter-cur" style="vertical-align: middle">
                 Suma VAT
             </th>
-            <th>
+            <th class="sorter-cur" style="vertical-align: middle">
                 Suma brutto
             </th>
         </tr>
     </thead>
     <tbody>
-        @{ bool row = true; }
         @foreach (var item in Model.OrderPositions)
         {
-            row = !row;
-            <tr class=@(row ? "d0" : "d1")>
-                <td>
+            <tr>
+                <td style="vertical-align: middle">
                     @item.Product.ProductName
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @item.Count
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @((item.Product.BaseNetPrice / 100.0).ToString("0.00")) zł
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @if (item.Discount != null)
                     {
                         <text>@(item.Discount)%</text>
                     }
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @((item.FinalNetPrice / 100.0).ToString("0.00")) zł
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @((item.FinalNetValue / 100.0).ToString("0.00")) zł
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @((item.FinalTaxValue / 100.0).ToString("0.00")) zł
                 </td>
-                <td>
+                <td style="vertical-align: middle">
                     @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'cur',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace(' zł', '').replace(',', '');
+                },
+                type: 'number'
+            });
+            $.tablesorter.addParser({
+                id: 'perc',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.replace('%', '');
+                },
+                type: 'number'
+            });
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+            $("#Positions").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}
