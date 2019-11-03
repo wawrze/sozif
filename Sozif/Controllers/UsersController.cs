@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sozif.Attributes;
 using Sozif.Utils;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,16 +22,50 @@ namespace Sozif.Controllers
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? userName, string? firstName, string? lastName, int? permLevel)
         {
             if (HttpContext.Session.GetString("EditUsers") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
-            var sozifContext = _context.Users
+            var users = await _context.Users
                 .OrderBy(u => u.PermLevel)
-                .Include(u => u.PermLevelNavigation);
-            return View(await sozifContext.ToListAsync());
+                .Include(u => u.PermLevelNavigation)
+                .ToListAsync();
+            var usersToShow = new List<Users>();
+            users.ForEach(u =>
+            {
+                bool isMatching = true;
+                if (userName != null && userName != "" && !u.Username.ToLower().Contains(userName.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (firstName != null && firstName != "" && !u.Firstname.ToLower().Contains(firstName.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (lastName != null && lastName != "" && !u.Lastname.ToLower().Contains(lastName.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (permLevel != null && u.PermLevel != permLevel)
+                {
+                    isMatching = false;
+                }
+                if (isMatching)
+                {
+                    usersToShow.Add(u);
+                }
+            });
+            var permLevels = await _context.UserPermissions.ToListAsync();
+
+            ViewBag.UserName = userName;
+            ViewBag.FirstName = firstName;
+            ViewBag.LastName = lastName;
+            ViewBag.PermLevel = permLevel;
+            ViewBag.PermLevels = permLevels;
+
+            return View(usersToShow);
         }
 
         // GET: Users/Create

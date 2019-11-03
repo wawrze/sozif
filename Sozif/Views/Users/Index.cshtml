@@ -7,50 +7,129 @@
 
 <h1>Lista użytkowników</h1>
 
-<p>
-    <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj użytkownika" /></a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Nazwa użytkownika
-            </th>
-            <th>
-                Imię
-            </th>
-            <th>
-                Nazwisko
-            </th>
-            <th>
-                Poziom uprawnień
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @{ bool row = true; }
-        @foreach (var item in Model)
-        {
-            row = !row;
-            <tr class=@(row ? "d0" : "d1")>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Username)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Firstname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lastname)
-                </td>
-                <td>
-                    @item.PermLevelNavigation.PermName (@item.PermLevelNavigation.PermLevel)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.UserId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
-                    <a asp-action="Delete" asp-route-id="@item.UserId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
-                </td>
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            <a asp-action="Create"><input class="btn btn-primary" type="button" value="Dodaj użytkownika" /></a>
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p align="right">
+            <input type="button" value="Resetuj filtry" onClick="clearFilters()" class="btn btn-outline-danger" form="filters" />
+            <input type="submit" id="applyFiltersButton" value="Zastosuj filtry" class="btn btn-primary" form="filters" />
+        </p>
+    </div>
+</div>
+<form asp-action="Index" id="filters" method="get">
+    <table id="Users" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th class="sorter-textPL">
+                    Nazwa użytkownika
+                </th>
+                <th class="sorter-textPL">
+                    Imię
+                </th>
+                <th class="sorter-textPL">
+                    Nazwisko
+                </th>
+                <th>
+                    Poziom uprawnień
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody class="tablesorter-no-sort">
+            <tr>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="userNameFilter" name="userName" value="@ViewBag.UserName">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="firstNameFilter" name="firstName" value="@ViewBag.FirstName">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <input type="text" id="lastNameFilter" name="lastName" value="@ViewBag.LastName">
+                </td>
+                <td style="background-color: #99bfe6; vertical-align: middle">
+                    <select name="permLevel" id="permLevelFilter" >
+                        @if (ViewBag.PermLevel == null)
+                        {
+                            <option value="@null" selected="selected"></option>
+                        }
+                        else
+                        {
+                            <option value="@null"></option>
+                        }
+                        @foreach (UserPermissions permLevel in ViewBag.PermLevels)
+                        {
+                            @if (ViewBag.PermLevel == permLevel.PermLevel)
+                            {
+                                <option value="@permLevel.PermLevel" selected="selected">@permLevel.PermName</option>
+                            }
+                            else
+                            {
+                                <option value="@permLevel.PermLevel">@permLevel.PermName</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td style="background-color: #99bfe6"></td>
+            </tr>
+        </tbody>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="vertical-align: middle">
+                        @Html.DisplayFor(modelItem => item.Username)
+                    </td>
+                    <td style="vertical-align: middle">
+                        @Html.DisplayFor(modelItem => item.Firstname)
+                    </td>
+                    <td style="vertical-align: middle">
+                        @Html.DisplayFor(modelItem => item.Lastname)
+                    </td>
+                    <td style="vertical-align: middle">
+                        @item.PermLevelNavigation.PermName (@item.PermLevelNavigation.PermLevel)
+                    </td>
+                    <td style="vertical-align: middle">
+                        <a asp-action="Edit" asp-route-id="@item.UserId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+                        <a asp-action="Delete" asp-route-id="@item.UserId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.tablesorter.addParser({
+                id: 'textPL',
+                is: function (s, table, cell, $cell) {
+                    return false;
+                },
+                format: function (s, table, cell, $cell) {
+                    return s.toLowerCase().replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ó', 'o').replace('ś', 's').replace('ż', 'z').replace('ź', 'z');
+                },
+                type: 'text'
+            });
+
+            $("#Users").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}
+
+<script type="text/javascript">
+    function clearFilters() {
+        document.getElementById("userNameFilter").value = null;
+        document.getElementById("firstNameFilter").value = null;
+        document.getElementById("lastNameFilter").value = null;
+        document.getElementById("permLevelFilter").value = null;
+        document.getElementById("applyFiltersButton").click();
+    }
+</script>
