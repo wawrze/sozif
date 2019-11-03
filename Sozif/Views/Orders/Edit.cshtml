@@ -113,8 +113,8 @@
                     @((item.FinalGrossValue / 100.0).ToString("0.00")) zł
                 </td>
                 <td style="vertical-align: middle">
-                    <a asp-action="EditOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
-                    <a asp-action="DeleteOrderPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
+                    <a asp-action="EditPosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
+                    <a asp-action="DeletePosition" asp-route-id="@item.ProductId" asp-route-orderId="@item.OrderId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
                 </td>
             </tr>
         }

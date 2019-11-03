@@ -9,6 +9,8 @@
 
 <hr />
 <dl class="row">
+    @if (ViewBag.From == null || ViewBag.From != "newOrder")
+    {
     <dt class="col-sm-2">
         Numer zamówienia
     </dt>
@@ -21,6 +23,7 @@
     <dd class="col-sm-10">
         @ViewBag.OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo)
     </dd>
+    }
     <dt class="col-sm-2">
         Klient
     </dt>
@@ -41,7 +44,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditOrderPosition">
+        <form asp-action="EditPosition" asp-route-from="@(ViewBag.From != null ? ViewBag.From : null)">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="OrderId" />
             <input type="hidden" asp-for="ProductId" />
@@ -67,6 +70,13 @@
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do edycji zamówienia" /></a>
+    @if (ViewBag.From != null && ViewBag.From == "newOrder")
+    {
+        <a asp-action="Create" asp-route-id="@ViewBag.Customer.CustomerId" asp-route-orderId="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
+    }
+    else
+    {
+        <a asp-action="Edit" asp-route-id="@ViewBag.OrderId"><input class="btn btn-secondary" type="button" value="Wróć do edycji zamówienia" /></a>
+    }
 </div>
 
