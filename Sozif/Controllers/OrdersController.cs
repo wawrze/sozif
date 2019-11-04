@@ -40,7 +40,9 @@ namespace Sozif.Controllers
             DateTime? realisationFrom,
             DateTime? realisationTo,
             string? invoice,
-            string? user
+            string? user,
+            string? from,
+            int? fromId
             )
         {
             var orders = await _context.Orders
@@ -63,7 +65,7 @@ namespace Sozif.Controllers
                 {
                     show = false;
                 }
-                if (customer != null && customer != "" && !o.Customer.ToString().ToLower().Contains(customer.ToLower()))
+                if (customer != null && customer != "" && !o.Customer.ToString().ToLower().Contains(customer.ToLower()) && !o.Customer.Nip.ToString().Contains(customer.ToLower()))
                 {
                     show = false;
                 }
@@ -150,6 +152,8 @@ namespace Sozif.Controllers
             ViewBag.RealisationTo = realisationTo?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
             ViewBag.CurrentInvoice = invoice;
             ViewBag.CurrentUser = user;
+            ViewBag.From = from;
+            ViewBag.FromId = fromId;
             return View(ordersToShow);
         }
 

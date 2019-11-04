@@ -14,6 +14,10 @@
             {
                 <a asp-action="ChooseCustomer"><input class="btn btn-success" type="button" value="Stwórz nowe zamówienie" /></a>
             }
+            @if (ViewBag.From != null && ViewBag.From == "Customer" && ViewBag.FromId != null)
+            {
+                <a asp-action="Details" asp-controller="Customers" asp-route-id="@ViewBag.FromId"><input class="btn btn-secondary" type="button" value="Wróć do szczegółów klienta" /></a>
+            }
         </p>
     </div>
     <div class="col-md-6">
@@ -115,38 +119,45 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
-                    <td>
+                <tr>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @Html.DisplayFor(modelItem => item.OrderNumber)
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Customers", new { id = item.CustomerId, from = "Orders" }))'">
                         @(item.Customer.ToString())
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @(item.OrderDate.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @(item.Address.FullAddress)
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @Html.DisplayFor(modelItem => item.PositionsCount)
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @((item.NetValue / 100.0).ToString("0.00")) zł
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @((item.TaxValue / 100.0).ToString("0.00")) zł
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @((item.GrossValue / 100.0).ToString("0.00")) zł
                     </td>
-                    <td>
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @(item.RealisationDate?.ToString("dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo))
                     </td>
-                    <td>
+                    @if (item.InvoiceId != null)
+                    {
+                    <td onclick="location.href = '@(Url.Action("Details", "Invoices", new { id = item.InvoiceId, from = "Orders" }))'">
                         @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
                     </td>
-                    <td>
+                    }
+                    else
+                    {
+                        <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'"></td>
+                    }
+                    <td onclick="location.href = '@(Url.Action("Details", "Orders", new { id = item.OrderId }))'">
                         @Html.DisplayFor(modelItem => item.UserName)
                     </td>
                 </tr>

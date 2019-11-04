@@ -43,5 +43,12 @@
         <a asp-action="Edit" asp-route-id="@Model.ProductId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
         <a asp-action="Delete" asp-route-id="@Model.ProductId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
     }
-    <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy produktów" /></a>
+    @if (ViewBag.From != null && ViewBag.From == "Order" && ViewBag.FromId != null)
+    {
+        <a asp-controller="Orders" asp-action="Details" asp-route-id="@ViewBag.FromId"><input class="btn btn-secondary" type="button" value="Wróć zamówienia" /></a>
+    }
+    else
+    {
+        <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy produktów" /></a>
+    }
 </div>

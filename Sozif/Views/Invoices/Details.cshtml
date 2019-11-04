@@ -80,7 +80,18 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy faktur" /></a>
+    @if (ViewBag.From != null && ViewBag.From == "Orders")
+    {
+        <a asp-controller="Orders" asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy zamówień" /></a>
+    }
+    else if (ViewBag.From != null && ViewBag.From == "Order" && ViewBag.FromId != null)
+    {
+        <a asp-controller="Orders" asp-action="Details" asp-route-id="@ViewBag.FromId"><input class="btn btn-secondary" type="button" value="Wróć zamówienia" /></a>
+    }
+    else
+    {
+        <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy faktur" /></a>
+    }
 </div>
 <hr />
 <h4>Pozycje faktury</h4>

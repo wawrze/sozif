@@ -14,6 +14,10 @@
             {
                 <a asp-action="ChooseCustomer"><input class="btn btn-success" type="button" value="Wystaw nową fakturę" /></a>
             }
+            @if (ViewBag.From != null && ViewBag.From == "Customer" && ViewBag.FromId != null)
+            {
+                <a asp-action="Details" asp-controller="Customers" asp-route-id="@ViewBag.FromId"><input class="btn btn-secondary" type="button" value="Wróć do szczegółów klienta" /></a>
+            }
         </p>
     </div>
     <div class="col-md-6">

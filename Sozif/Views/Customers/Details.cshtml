@@ -87,12 +87,28 @@
     </div>
 </div>
 <div>
+    <a asp-action="Index" asp-controller="Orders" asp-route-customer="@Model.Nip" asp-route-from="Customer" asp-route-fromId="@Model.CustomerId"><input class="btn btn-outline-info" type="button" value="Zamówienia klienta" /></a>
+    <a asp-action="Index" asp-controller="Invoices" asp-route-customer="@Model.Nip" asp-route-from="Customer" asp-route-fromId="@Model.CustomerId"><input class="btn btn-outline-secondary" type="button" value="Faktury klienta" /></a>
+</div>
+<br />
+<div>
     @if (Context.Session.GetString("EditCustomers") == "true")
     {
         <a asp-action="Edit" asp-route-id="@Model.CustomerId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
         <a asp-action="Delete" asp-route-id="@Model.CustomerId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
     }
-    <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy klientów" /></a>
+    @if (ViewBag.From != null && ViewBag.From == "Orders")
+    {
+        <a asp-controller="Orders" asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy zamówień" /></a>
+    }
+    else if (ViewBag.From != null && ViewBag.From == "Order" && ViewBag.FromId != null)
+    {
+        <a asp-controller="Orders" asp-action="Details" asp-route-id="@ViewBag.FromId"><input class="btn btn-secondary" type="button" value="Wróć zamówienia" /></a>
+    }
+    else
+    {
+        <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Wróć do listy klientów" /></a>
+    }
 </div>
 
 @section scripts {

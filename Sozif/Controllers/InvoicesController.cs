@@ -39,7 +39,9 @@ namespace Sozif.Controllers
             double? grossTo,
             DateTime? paymentFrom,
             DateTime? paymentTo,
-            string? user
+            string? user,
+            string? from,
+            int? fromId
         )
         {
             var invoices = await _context.Invoices
@@ -62,7 +64,7 @@ namespace Sozif.Controllers
                 {
                     isMatching = false;
                 }
-                if (customer != null && customer != "" && !i.CustomerName.ToLower().Contains(customer.ToLower()))
+                if (customer != null && customer != "" && !i.CustomerName.ToLower().Contains(customer.ToLower()) && !i.CustomerNip.ToString().Contains(customer.ToLower()))
                 {
                     isMatching = false;
                 }
@@ -148,12 +150,13 @@ namespace Sozif.Controllers
             ViewBag.PaymentFrom = paymentFrom?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
             ViewBag.PaymentTo = paymentTo?.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo);
             ViewBag.User = user;
-
+            ViewBag.From = from;
+            ViewBag.FromId = fromId;
             return View(invoicesToShow);
         }
 
         // GET: Invoices/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string? from, int? fromId)
         {
             if (id == null)
             {
@@ -167,6 +170,8 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            ViewBag.From = from;
+            ViewBag.FromId = fromId;
 
             return View(invoices);
         }

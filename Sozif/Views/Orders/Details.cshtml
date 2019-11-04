@@ -21,7 +21,7 @@
             Klient
         </dt>
         <dd class="col-sm-10">
-            @(Model.Customer.ToString())
+            <a asp-action="Details" asp-controller="Customers" asp-route-id="@Model.CustomerId" asp-route-from="Order" asp-route-fromId="@Model.OrderId">@(Model.Customer.ToString())</a>
         </dd>
         <dt class="col-sm-2">
             Data zamówienia
@@ -74,7 +74,7 @@
                 Numer faktury
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Invoice.InvoiceNumber)
+                <a asp-action="Details" asp-controller="Invoices" asp-route-id="@Model.Invoice.InvoiceId" asp-route-from="Order" asp-route-fromId="@Model.OrderId">@Model.Invoice.InvoiceNumber</a>
             </dd>
         }
         <dt class="col-sm-2">
@@ -132,7 +132,7 @@
     <tbody>
         @foreach (var item in Model.OrderPositions)
         {
-            <tr>
+            <tr onclick="location.href = '@(Url.Action("Details", "Products", new { id = item.ProductId, from = "Order", fromId = item.OrderId }))'">
                 <td style="vertical-align: middle">
                     @item.Product.ProductName
                 </td>
