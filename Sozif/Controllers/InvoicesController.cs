@@ -241,7 +241,7 @@ namespace Sozif.Controllers
         }
 
         // GET: Invoices/ChooseOrders/5
-        public async Task<IActionResult> ChooseOrders(int? id)
+        public async Task<IActionResult> ChooseOrders(int? id, string? from)
         {
             if (HttpContext.Session.GetString("EditInvoices") == "false")
             {
@@ -256,6 +256,8 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            ViewBag.From = from;
+            ViewBag.CustomerId = id;
 
             var ordersToChooseFrom = await _context.Orders
                 .Where(o => !o.OrderNumber.Contains("R") && o.RealisationDate != null)

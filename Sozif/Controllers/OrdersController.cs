@@ -278,7 +278,7 @@ namespace Sozif.Controllers
         }
 
         // GET: Orders/Create/5
-        public async Task<IActionResult> Create(int? id, int? orderId)
+        public async Task<IActionResult> Create(int? id, int? orderId, string? from)
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
@@ -293,6 +293,7 @@ namespace Sozif.Controllers
             {
                 return NotFound();
             }
+            ViewBag.From = from;
 
             Orders order;
             if (orderId == null)
@@ -826,7 +827,7 @@ namespace Sozif.Controllers
                 .Include(o => o.Address)
                 .FirstOrDefaultAsync(o => o.OrderId == orderPosition.OrderId);
             var product = await _context.Products.Include(p => p.TaxRate).FirstOrDefaultAsync(p => p.ProductId == orderPosition.ProductId);
-            if(product == null)
+            if (product == null)
             {
                 return NotFound();
             }
@@ -958,14 +959,26 @@ namespace Sozif.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        public async Task<IActionResult> DeleteOrder(int id)
+        public async Task<IActionResult> DeleteOrder(int id, string? from)
         {
             var orders = await _context.Orders.Include(o => o.OrderPositions).FirstOrDefaultAsync(o => o.OrderId == id);
+            if (orders == null)
+            {
+                return NotFound();
+            }
+            int customerId = orders.CustomerId;
             _context.OrderPositions.RemoveRange(orders.OrderPositions);
             await _context.SaveChangesAsync();
             _context.Orders.Remove(orders);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (from != null && from == "Customer")
+            {
+                return RedirectToAction("Details", "Customers", new { id = customerId });
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool OrdersExists(int id)

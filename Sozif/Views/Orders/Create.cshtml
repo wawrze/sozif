@@ -36,7 +36,14 @@
 </div>
 
 <div>
-    <a asp-action="DeleteOrder" asp-route-id="@Model.OrderId"><input class="btn btn-secondary" type="button" value="Wycofaj i wróć do listy zamówień" /></a>
+    @if (ViewBag.From != null && ViewBag.From == "Customer")
+    {
+        <a asp-action="DeleteOrder" asp-route-id="@Model.OrderId" asp-route-from="Customer"><input class="btn btn-secondary" type="button" value="Wycofaj i wróć do szczegółów klienta" /></a>
+    }
+    else
+    {
+        <a asp-action="DeleteOrder" asp-route-id="@Model.OrderId"><input class="btn btn-secondary" type="button" value="Wycofaj i wróć do listy zamówień" /></a>
+    }
 </div>
 
 <hr />

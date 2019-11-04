@@ -36,6 +36,10 @@
         {
             <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Orders.First(o => o.Value == true).Key"><input class="btn btn-secondary" type="button" value="Wróć do zamówienia" /></a>
         }
+        else if (ViewBag.From != null && ViewBag.From == "Customer")
+        {
+            <a asp-controller="Customers" asp-action="Details" asp-route-id="@ViewBag.CustomerId"><input class="btn btn-secondary" type="button" value="Wróć szczegółów klienta" /></a>
+        }
         else
         {
             <a asp-action="ChooseCustomer"><input class="btn btn-secondary" type="button" value="Wróć do wyboru klienta" /></a>

@@ -87,8 +87,19 @@
     </div>
 </div>
 <div>
+    @if (Context.Session.GetString("EditOrders") == "true")
+    {
+        <a asp-action="Create" asp-controller="Orders" asp-route-customer="@Model.Nip" asp-route-id="@Model.CustomerId" asp-route-from="Customer"><input class="btn btn-info" type="button" value="Nowe zamówienie" /></a>
+    }
+    @if (Context.Session.GetString("EditInvoices") == "true")
+    {
+        <a asp-action="ChooseOrders" asp-controller="Invoices" asp-route-customer="@Model.Nip" asp-route-id="@Model.CustomerId" asp-route-from="Customer"><input class="btn btn-warning" type="button" value="Wystaw fakturę" /></a>
+    }
+</div>
+<br />
+<div>
     <a asp-action="Index" asp-controller="Orders" asp-route-customer="@Model.Nip" asp-route-from="Customer" asp-route-fromId="@Model.CustomerId"><input class="btn btn-outline-info" type="button" value="Zamówienia klienta" /></a>
-    <a asp-action="Index" asp-controller="Invoices" asp-route-customer="@Model.Nip" asp-route-from="Customer" asp-route-fromId="@Model.CustomerId"><input class="btn btn-outline-secondary" type="button" value="Faktury klienta" /></a>
+    <a asp-action="Index" asp-controller="Invoices" asp-route-customer="@Model.Nip" asp-route-from="Customer" asp-route-fromId="@Model.CustomerId"><input class="btn btn-outline-warning" type="button" value="Faktury klienta" /></a>
 </div>
 <br />
 <div>
