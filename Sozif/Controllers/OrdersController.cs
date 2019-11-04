@@ -664,14 +664,89 @@ namespace Sozif.Controllers
             return RedirectToAction("Details", new { id = id });
         }
 
-        // GET: Orders/NewPosition/5
-        public async Task<IActionResult> NewPosition(int? id, string? from)
+        // GET: Orders/ChooseProduct/5?from=New
+        public async Task<IActionResult> ChooseProduct(
+            int? id,
+            string? from,
+            string? name,
+            decimal? netFrom,
+            decimal? netTo,
+            int? tax,
+            decimal? grossFrom,
+            decimal? grossTo
+        )
         {
             if (HttpContext.Session.GetString("EditOrders") == "false")
             {
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
+            {
+                return NotFound();
+            }
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Address)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            var products = await _context.Products.Include(p => p.TaxRate).ToListAsync();
+            var productsToShow = new List<Products>();
+            products.ForEach(p =>
+            {
+                bool isMatching = true;
+                if (name != null && name != "" && !p.ProductName.ToLower().Contains(name.ToLower()))
+                {
+                    isMatching = false;
+                }
+                if (netFrom != null && p.BaseNetPrice < netFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (netTo != null && p.BaseNetPrice > netTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (tax != null && p.TaxRateId != tax)
+                {
+                    isMatching = false;
+                }
+                if (grossFrom != null && p.BaseGrossPrice < grossFrom * 100)
+                {
+                    isMatching = false;
+                }
+                if (grossTo != null && p.BaseGrossPrice > grossTo * 100)
+                {
+                    isMatching = false;
+                }
+                if (isMatching)
+                {
+                    productsToShow.Add(p);
+                }
+            });
+            ViewBag.TaxRates = await _context.TaxRates.ToListAsync();
+            ViewBag.Name = name;
+            ViewBag.NetFrom = netFrom.ToString().Replace(',', '.');
+            ViewBag.NetTo = netTo.ToString().Replace(',', '.');
+            ViewBag.Tax = tax;
+            ViewBag.GrossFrom = grossFrom.ToString().Replace(',', '.');
+            ViewBag.GrossTo = grossTo.ToString().Replace(',', '.');
+            ViewBag.Order = order;
+            ViewBag.From = from;
+
+            return View(productsToShow);
+        }
+
+        // GET: Orders/NewPosition/5
+        public async Task<IActionResult> NewPosition(int? id, int? orderId, string? from)
+        {
+            if (HttpContext.Session.GetString("EditOrders") == "false")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null || orderId == null)
             {
                 return NotFound();
             }
@@ -682,14 +757,17 @@ namespace Sozif.Controllers
             var order = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Address)
-                .FirstOrDefaultAsync(o => o.OrderId == id);
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+            var product = await _context.Products.Include(p => p.TaxRate).FirstOrDefaultAsync(p => p.ProductId == id);
+            if (product == null || order == null)
+            {
+                return NotFound();
+            }
 
-            ViewBag.Customer = order.Customer;
-            ViewBag.Address = order.Address;
-            ViewBag.OrderId = order.OrderId;
+            ViewBag.Product = product;
+            ViewBag.Order = order;
             ViewBag.From = from;
 
-            ViewData["ProductId"] = new SelectList(_context.Products.OrderBy(p => p.ProductName), "ProductId", "ProductName");
             return View();
         }
 
@@ -734,23 +812,26 @@ namespace Sozif.Controllers
 
                 if (from == "New")
                 {
-                    var newOrder = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
-                    return RedirectToAction("Create", new { id = newOrder.CustomerId, orderId = id });
+                    var newOrder = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderPosition.OrderId);
+                    return RedirectToAction("Create", new { id = newOrder.CustomerId, orderId = newOrder.OrderId });
                 }
-                return RedirectToAction("Edit", new { id = id });
+                return RedirectToAction("Edit", new { id = orderPosition.OrderId });
             }
             var order = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Address)
-                .FirstOrDefaultAsync(o => o.OrderId == id);
+                .FirstOrDefaultAsync(o => o.OrderId == orderPosition.OrderId);
+            var product = await _context.Products.Include(p => p.TaxRate).FirstOrDefaultAsync(p => p.ProductId == orderPosition.ProductId);
+            if(product == null)
+            {
+                return NotFound();
+            }
 
-            ViewBag.Customer = order.Customer;
-            ViewBag.Address = order.Address;
-            ViewBag.OrderId = order.OrderId;
+            ViewBag.Product = product;
+            ViewBag.Order = order;
             ViewBag.From = from;
-
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
             ViewBag.ErrorMessage = errorMessage;
+
             return View(orderPosition);
         }
 
