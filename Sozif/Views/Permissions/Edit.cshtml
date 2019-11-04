@@ -1,0 +1,118 @@
+﻿@model Sozif.UserPermissions
+
+@{
+    ViewData["Title"] = "Poziomy uprawnień użytkowników";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Poziomy uprawnień użytkowników</h1>
+
+<p>
+    <a asp-action="Index"><input class="btn btn-secondary" type="button" value="Anuluj" /></a>
+</p>
+<form asp-action="Edit">
+    <table id="Permissions" class="table table-bordered sortable">
+        <thead>
+            <tr>
+                <th class="sorter-false" style="vertical-align: middle">
+                    Nazwa uprawnień
+                </th>
+                <th class="sorter-false" style="vertical-align: middle">
+                    Edycja użytkowników
+                </th>
+                <th class="sorter-false" style="vertical-align: middle">
+                    Edycja produktów i stawek VAT
+                </th>
+                <th class="sorter-false" style="vertical-align: middle">
+                    Edycja klientów
+                </th>
+                <th class="sorter-false" style="vertical-align: middle">
+                    Tworzenie i edycja zamówień
+                </th>
+                <th class="sorter-false" style="vertical-align: middle">
+                    Wystawianie faktur
+                </th>
+                <th class="sorter-false"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserPermissions item in ViewBag.Permissions)
+            {
+                if (Model.PermLevel == item.PermLevel)
+                {
+                    <tr>
+                        <td style="vertical-align: middle">
+                            <input asp-for="PermLevel" class="form-control" hidden="hidden" />
+                            <input asp-for="PermName" class="form-control" />
+                        </td>
+                        <td style="vertical-align: middle">
+                            <p style="align-content: center">
+                                <input class="form-check-input" asp-for="EditUsers" style="margin: auto" />
+                            </p>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <p style="align-content: center">
+                                <input class="form-check-input" asp-for="EditProducts" style="margin: auto" />
+                            </p>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <p style="align-content: center">
+                                <input class="form-check-input" asp-for="EditCustomers" style="margin: auto" />
+                            </p>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <p style="align-content: center">
+                                <input class="form-check-input" asp-for="EditOrders" style="margin: auto" />
+                            </p>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <p style="align-content: center">
+                                <input class="form-check-input" asp-for="EditInvoices" style="margin: auto" />
+                            </p>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <input type="submit" value="Zapisz" class="btn btn-primary" style="margin: auto" />
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.PermName)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.EditUsers)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.EditProducts)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.EditCustomers)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.EditOrders)
+                        </td>
+                        <td style="vertical-align: middle">
+                            @Html.DisplayFor(modelItem => item.EditInvoices)
+                        </td>
+                        <td>
+                            <a><input class="btn btn-outline-link" style="width: 0" /></a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Permissions").tablesorter({
+                theme: 'blue',
+                widgets: ['zebra']
+            });
+        });
+    </script>
+}

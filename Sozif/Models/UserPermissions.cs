@@ -17,6 +17,14 @@ namespace Sozif
         public bool EditOrders { get; set; }
         public bool EditInvoices { get; set; }
 
+        public int UsersWithPermLevel
+        {
+            get
+            {
+                return Users.Count;
+            }
+        }
+
         public virtual ICollection<Users> Users { get; set; }
     }
 }
