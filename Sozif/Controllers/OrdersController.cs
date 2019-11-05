@@ -366,6 +366,7 @@ namespace Sozif.Controllers
 
             var position = await _context.OrderPositions
                 .Include(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ProductId == id);
             if (order == null || position == null)
             {
@@ -461,6 +462,7 @@ namespace Sozif.Controllers
             ViewBag.From = from;
             var position = await _context.OrderPositions
                 .Include(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.ProductId == id);
             position.Count = orderPosition.Count;
             position.Discount = orderPosition.Discount;
@@ -477,7 +479,11 @@ namespace Sozif.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            var orderPositions = await _context.OrderPositions.Where(op => op.OrderId == orders.OrderId).ToListAsync();
+            var orderPositions = await _context.OrderPositions
+                .Include(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
+                .Where(op => op.OrderId == orders.OrderId)
+                .ToListAsync();
             if (orderPositions.Count == 0) ViewBag.ErrorMessage = "Nie możesz zapisać zamówienia bez pozycji!";
             if (orderPositions.Count > 0)
             {
@@ -788,6 +794,7 @@ namespace Sozif.Controllers
             string errorMessage = "";
             var orderPositionInDB = await _context.OrderPositions
                 .Include(op => op.Product)
+                .ThenInclude(p => p.TaxRate)
                 .FirstOrDefaultAsync(op => op.OrderId == orderPosition.OrderId && op.ProductId == orderPosition.ProductId);
             if (orderPositionInDB != null)
             {

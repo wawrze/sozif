@@ -13,29 +13,28 @@ namespace Sozif
             Orders = new HashSet<Orders>();
         }
 
-        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column ("user_id")]
+        [Key, Column ("user_id", TypeName = "INTEGER")]
         public int UserId { get; set; }
 
-        [Column("username", TypeName = "varchar(10)")]
+        [Column("username", TypeName = "VARCHAR(10)")]
         [Required]
         [Index(IsUnique = true)]
         public string Username { get; set; }
 
-        [Column("password", TypeName = "varchar(100)")]
+        [Column("password", TypeName = "VARCHAR(100)")]
         [Required]
         public string Password { get; set; }
 
-        [Column("firstname", TypeName = "varchar(10)")]
+        [Column("firstname", TypeName = "VARCHAR(10)")]
         [Required]
         public string Firstname { get; set; }
 
-        [Column("lastname", TypeName = "varchar(20)")]
+        [Column("lastname", TypeName = "VARCHAR(20)")]
         [Required]
         public string Lastname { get; set; }
 
-        [Column("perm_level")]
+        [Column("perm_level", TypeName = "INTEGER")]
         [ForeignKey("UserPermissions")]
         [Required]
         public int PermLevel { get; set; }

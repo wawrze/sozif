@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sozif
 {
+    [Table("invoices")]
     public partial class Invoices
     {
         public Invoices()
@@ -11,19 +14,56 @@ namespace Sozif
             Orders = new HashSet<Orders>();
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, Column("invoice_id", TypeName = "INTEGER")]
         public int InvoiceId { get; set; }
+
+        [Column("invoice_number", TypeName = "VARCHAR(15)")]
+        [Required]
+        [Index(IsUnique = true)]
         public string InvoiceNumber { get; set; }
+
+        [Column("customer_name", TypeName = "VARCHAR(50)")]
+        [Required]
         public string CustomerName { get; set; }
+
+        [Column("customer_nip", TypeName = "NUMERIC(10)")]
+        [Required]
         public decimal CustomerNip { get; set; }
+
+        [Column("customer_address", TypeName = "VARCHAR(30)")]
+        [Required]
         public string CustomerAddress { get; set; }
+
+        [Column("customer_postal_code", TypeName = "VARCHAR(6)")]
+        [Required]
         public string CustomerPostalCode { get; set; }
+
+        [Column("customer_city", TypeName = "VARCHAR(20)")]
+        [Required]
         public string CustomerCity { get; set; }
+
+        [Column("invoice_date", TypeName = "DATE")]
+        [Required]
         public DateTime InvoiceDate { get; set; }
+
+        [Column("days_to_pay", TypeName = "INTEGER")]
+        [Required]
         public int DaysToPay { get; set; }
+
+        [Column("user_name", TypeName = "VARCHAR(31)")]
+        [Required]
         public string UserName { get; set; }
+
+        [Column("customer_id", TypeName = "INTEGER")]
+        [ForeignKey("Customers")]
         public int? CustomerId { get; set; }
+
+        [Column("user_id", TypeName = "INTEGER")]
+        [ForeignKey("Users")]
         public int? UserId { get; set; }
 
+        [NotMapped]
         public int PositionsCount
         {
             get
@@ -32,6 +72,7 @@ namespace Sozif
             }
         }
 
+        [NotMapped]
         public int NetValue
         {
             get
@@ -45,6 +86,7 @@ namespace Sozif
             }
         }
 
+        [NotMapped]
         public int GrossValue
         {
             get
@@ -58,6 +100,7 @@ namespace Sozif
             }
         }
 
+        [NotMapped]
         public int TaxValue
         {
             get
@@ -66,6 +109,7 @@ namespace Sozif
             }
         }
 
+        [NotMapped]
         public string NipString
         {
             get

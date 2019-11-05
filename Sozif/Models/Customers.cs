@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sozif
 {
+    [Table("customers")]
     public partial class Customers
     {
         public Customers()
@@ -12,11 +14,24 @@ namespace Sozif
             Invoices = new HashSet<Invoices>();
             Orders = new HashSet<Orders>();
         }
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, Column("customer_id", TypeName = "INTEGER")]
         public int CustomerId { get; set; }
+
+        [Column("customer_name", TypeName = "VARCHAR(50)")]
+        [Required]
+        [Index(IsUnique = true)]
         public string CustomerName { get; set; }
+
+        [Column("nip", TypeName = "NUMERIC(10)")]
+        [Required]
+        [Index(IsUnique = true)]
         public decimal Nip { get; set; }
+
+        [Column("contact_person", TypeName = "VARCHAR(30)")]
         public string ContactPerson { get; set; }
+
+        [Column("phone_number", TypeName = "NUMERIC(9)")]
         public decimal? PhoneNumber { get; set; }
 
         [NotMapped]

@@ -1,15 +1,40 @@
-﻿namespace Sozif
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Sozif
 {
+    [Table("invoice_positions")]
     public partial class InvoicePositions
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, Column("invoice_position_id", TypeName = "INTEGER")]
         public int InvoicePositionId { get; set; }
+
+        [Column("product_name", TypeName = "VARCHAR(50)")]
+        [Required]
         public string ProductName { get; set; }
+
+        [Column("product_count", TypeName = "INTEGER")]
+        [Required]
         public int ProductCount { get; set; }
+
+        [Column("product_net_price", TypeName = "INTEGER")]
+        [Required]
         public int ProductNetPrice { get; set; }
+
+        [Column("product_tax_rate", TypeName = "INTEGER")]
+        [Required]
         public int ProductTaxRate { get; set; }
+
+        [Column("discount", TypeName = "INTEGER")]
         public int? Discount { get; set; }
+
+        [Column("invoice_id", TypeName = "INTEGER")]
+        [Required]
+        [ForeignKey("Invoices")]
         public int InvoiceId { get; set; }
 
+        [NotMapped]
         public int FinalNetPrice
         {
             get
@@ -20,6 +45,7 @@
             }
         }
 
+        [NotMapped]
         public int FinalGrossPrice
         {
             get
@@ -30,6 +56,7 @@
             }
         }
 
+        [NotMapped]
         public int FinalNetValue
         {
             get
@@ -38,6 +65,7 @@
             }
         }
 
+        [NotMapped]
         public int FinalGrossValue
         {
             get
@@ -46,6 +74,7 @@
             }
         }
 
+        [NotMapped]
         public int FinalTaxValue
         {
             get
