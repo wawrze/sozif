@@ -14,7 +14,7 @@ namespace Sozif
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key, Column ("user_id", TypeName = "INTEGER")]
+        [Key, Column("user_id", TypeName = "INTEGER")]
         public int UserId { get; set; }
 
         [Column("username", TypeName = "VARCHAR(10)")]
@@ -38,7 +38,7 @@ namespace Sozif
         [ForeignKey("UserPermissions")]
         [Required]
         public int PermLevel { get; set; }
-        
+
         [NotMapped]
         public string UserData
         {

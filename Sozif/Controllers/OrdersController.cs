@@ -769,7 +769,9 @@ namespace Sozif.Controllers
                 .Include(o => o.Customer)
                 .Include(o => o.Address)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
-            var product = await _context.Products.Include(p => p.TaxRate).FirstOrDefaultAsync(p => p.ProductId == id);
+            var product = await _context.Products
+                .Include(p => p.TaxRate)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null || order == null)
             {
                 return NotFound();

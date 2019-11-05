@@ -184,7 +184,10 @@ namespace Sozif.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var customers = await _context.Customers.Include(c => c.Addresses).OrderBy(c => c.CustomerName).ToListAsync();
+            var customers = await _context.Customers
+                .Include(c => c.Addresses)
+                .Include(c => c.Orders)
+                .OrderBy(c => c.CustomerName).ToListAsync();
 
             var customersToShow = new List<Customers>();
             customers.ForEach(c =>
@@ -226,7 +229,7 @@ namespace Sozif.Controllers
                 {
                     isMatching = false;
                 }
-                if (isMatching)
+                if (isMatching && c.Orders.Where(o => o.RealisationDate != null && o.InvoiceId == null).ToList().Count > 0)
                 {
                     customersToShow.Add(c);
                 }
@@ -346,7 +349,7 @@ namespace Sozif.Controllers
             {
                 ViewBag.ErrorMessage = "Musisz wybrać przynajmniej jedno zamówienie, do którego chcesz wystawić fakturę!";
             }
-            if (ViewBag.ErrorMessage == null && ViewBag.From == null)
+            if (ViewBag.ErrorMessage == null)
             {
                 var lastInvoiceInDB = await _context.Invoices
                     .OrderByDescending(o => o.InvoiceId)

@@ -34,6 +34,7 @@ namespace Sozif
         {
             get
             {
+                if (TaxRate == null) return 0;
                 return BaseNetPrice * (100 + TaxRate.Rate) / 100;
             }
         }

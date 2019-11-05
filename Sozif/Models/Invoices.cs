@@ -92,9 +92,9 @@ namespace Sozif
             get
             {
                 int value = 0;
-                foreach (InvoicePositions orderPosition in this.InvoicePositions)
+                foreach (InvoicePositions invoicePosition in this.InvoicePositions)
                 {
-                    value += orderPosition.FinalGrossValue;
+                    value += invoicePosition.FinalGrossValue;
                 }
                 return value;
             }

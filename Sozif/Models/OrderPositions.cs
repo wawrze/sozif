@@ -26,6 +26,7 @@ namespace Sozif
         {
             get
             {
+                if (Product == null) return 0;
                 if (Discount == null) return Product.BaseNetPrice;
                 int discount = (int)Discount;
                 return Product.BaseNetPrice * (100 - discount) / 100;
@@ -37,6 +38,7 @@ namespace Sozif
         {
             get
             {
+                if (Product == null) return 0;
                 if (Discount == null) return Product.BaseGrossPrice;
                 int discount = (int)Discount;
                 return Product.BaseGrossPrice * (100 - discount) / 100;

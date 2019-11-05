@@ -99,6 +99,7 @@ namespace Sozif
         {
             get
             {
+                if (User == null) return "";
                 return User.Firstname + " " + User.Lastname;
             }
         }
