@@ -92,7 +92,7 @@
         <a asp-action="Edit" asp-route-id="@Model.OrderId"><input class="btn btn-outline-primary" type="button" value="Edytuj" /></a>
         <a asp-action="Delete" asp-route-id="@Model.OrderId"><input class="btn btn-outline-danger" type="button" value="Usuń" /></a>
     }
-    else if (Context.Session.GetString("EditInvoices") == "true")
+    else if (Model.RealisationDate != null && Context.Session.GetString("EditInvoices") == "true")
     {
         <a asp-action="FromOrder" asp-controller="Invoices" asp-route-orderId="@Model.OrderId" asp-route-customerId="@Model.CustomerId"><input class="btn btn-outline-success" type="button" value="Wystaw fakturę" /></a>
     }
